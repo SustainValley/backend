@@ -1,0 +1,29 @@
+server:
+  servlet:
+    context-path: /hackathon/api
+
+spring:
+  application:
+    name: hackathon
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui
+
+oauth:
+  kakao:
+    client-id: ${OAUTH_KAKAO_CLIENT_ID}
+    redirect-uri: ${OAUTH_KAKAO_REDIRECT_URI}
+    token-uri: ${OAUTH_KAKAO_TOKEN_URI}
+    user-info-uri: ${OAUTH_KAKAO_USER_INFO_URI}
