@@ -9,6 +9,9 @@ env:
   DB_URL: ${{ secrets.DB_URL }}
   DB_USERNAME: ${{ secrets.DB_USERNAME }}
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  PROD_DB_USERNAME: ${{ secrets.PROD_DB_USERNAME }}
+  PROD_DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+  PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
   OAUTH_KAKAO_CLIENT_ID: ${{ secrets.OAUTH_KAKAO_CLIENT_ID }}
   OAUTH_KAKAO_REDIRECT_URI: ${{ secrets.OAUTH_KAKAO_REDIRECT_URI }}
   OAUTH_KAKAO_TOKEN_URI: ${{ secrets.OAUTH_KAKAO_TOKEN_URI }}
