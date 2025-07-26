@@ -9,3 +9,13 @@ spring:
       ddl-auto: create-drop
     database-platform: org.hibernate.dialect.H2Dialect
     show-sql: true
+
+oauth:
+  kakao:
+    client-id: ${OAUTH_KAKAO_CLIENT_ID}
+    redirect-uri: ${OAUTH_KAKAO_REDIRECT_URI}
+    token-uri: ${OAUTH_KAKAO_TOKEN_URI}
+    user-info-uri: ${OAUTH_KAKAO_USER_INFO_URI}
+
+jwt:
+  secret: ${JWT_SECRET}
