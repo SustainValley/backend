@@ -2,8 +2,8 @@
 FROM openjdk:17-jdk-slim
 
 # 2. JAR 파일 복사
-ARG JAR_FILE=build/libs/2025-hackathon.jar
-COPY ${JAR_FILE} app.jar
+ARG JAR_FILE=build/libs/*.jar
+COPY ${JAR_FILE} fiterview_backend_spring.jar
 
 # 3. 포트 오픈 (Spring Boot 기본 8080)
 EXPOSE 8080
