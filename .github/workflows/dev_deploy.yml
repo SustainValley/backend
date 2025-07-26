@@ -35,6 +35,10 @@ jobs:
         with:
           java-version: 17
 
+      # 테스트 설정
+      - name: Build with test profile
+        run: ./gradlew build -Dspring.profiles.active=test
+
       # Gradle Build
       - name: Build with Gradle
         run: ./gradlew build
