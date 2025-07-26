@@ -14,7 +14,6 @@ spring:
   profiles:
     include:
       - database
-    active: ${SPRING_PROFILES_ACTIVE:local}
 
 springdoc:
   api-docs:
