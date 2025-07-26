@@ -53,8 +53,8 @@ jobs:
       # DockerHub Push
       - name: Build and Push Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/didacto-app-dev .
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/didacto-app-dev
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/likelion-app-dev .
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/likelion-app-dev
   
 
   deploy:
@@ -73,5 +73,5 @@ jobs:
             cd backend
             sudo docker-compose stop
             sudo docker-compose rm -f
-            sudo docker rmi sjh9708/didacto-app-dev:latest
+            sudo docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/likelion-app-dev:latest
             sudo docker-compose up -d
