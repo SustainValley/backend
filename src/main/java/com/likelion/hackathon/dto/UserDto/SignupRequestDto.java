@@ -7,6 +7,7 @@ import lombok.*;
 public class SignupRequestDto {
     private String username;
     private String password;
+    private String phoneNumber;
     private String provider;
 
     // 사장님(cor) 회원가입 시 추가 필드
