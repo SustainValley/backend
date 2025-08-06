@@ -1,6 +1,6 @@
 package com.likelion.hackathon.controller;
 
-import com.likelion.hackathon.dto.OAuthDto.KakaoUserDto;
+import com.likelion.hackathon.dto.UserDto.LoginResponseDto;
 import com.likelion.hackathon.service.KakaoOAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +17,8 @@ public class OAuthController {
     private final KakaoOAuthService kakaoOAuthService;
 
     @GetMapping("/kakao/callback")
-    public ResponseEntity<KakaoUserDto> kakaoCallback(@RequestParam String code) {
-        KakaoUserDto kakaoUser = kakaoOAuthService.kakaoLogin(code);
-        return ResponseEntity.ok(kakaoUser);
+    public ResponseEntity<LoginResponseDto> kakaoCallback(@RequestParam String code) {
+        LoginResponseDto loginResponse = kakaoOAuthService.kakaoLogin(code);
+        return ResponseEntity.ok(loginResponse);
     }
 }

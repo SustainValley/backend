@@ -2,9 +2,10 @@ package com.likelion.hackathon.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.likelion.hackathon.dto.OAuthDto.KakaoUserDto;
+import com.likelion.hackathon.dto.UserDto.LoginResponseDto;
 import com.likelion.hackathon.entity.User;
 import com.likelion.hackathon.repository.UserRepository;
+import com.likelion.hackathon.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -20,6 +21,7 @@ import java.util.Optional;
 public class KakaoOAuthService {
 
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
     @Value("${OAUTH_KAKAO_CLIENT_ID}")
     private String clientId;
@@ -59,11 +61,11 @@ public class KakaoOAuthService {
     }
 
 
-    public KakaoUserDto kakaoLogin(String code) {
-        String accessToken = getKakaoAccessToken(code);
+    public LoginResponseDto kakaoLogin(String code) {
+        String kakaoAccessToken = getKakaoAccessToken(code);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(accessToken);
+        headers.setBearerAuth(kakaoAccessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<?> request = new HttpEntity<>(headers);
 
@@ -86,14 +88,20 @@ public class KakaoOAuthService {
 
             User user = optionalUser.orElseGet(() -> {
                 User newUser = new User();
-                newUser.setUsername(kakaoId); // ID를 username으로
+                newUser.setUsername(kakaoId);;
+                newUser.setNickname(nickname);
                 newUser.setPassword("");
                 newUser.setProvider("kakao");
-                newUser.setEmail(email); // 추가 가능
+                newUser.setEmail(email);
                 return userRepository.save(newUser);
             });
 
-            return new KakaoUserDto(email, nickname, accessToken);
+            // JWT 토큰 생성
+            String accessToken = jwtUtil.generateAccessToken(user);
+            String refreshToken = jwtUtil.generateRefreshToken(user);
+
+            String message = "카카오 로그인 성공";
+            return new LoginResponseDto(message, accessToken, refreshToken, user.getId());
 
         } catch (Exception e) {
             throw new RuntimeException("카카오 사용자 정보 파싱 실패", e);
