@@ -92,7 +92,6 @@ public class KakaoOAuthService {
                 newUser.setNickname(nickname);
                 newUser.setPassword("");
                 newUser.setProvider("kakao");
-                newUser.setEmail(email);
                 return userRepository.save(newUser);
             });
 
