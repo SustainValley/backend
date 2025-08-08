@@ -1,13 +1,11 @@
 package com.likelion.hackathon.controller;
 
-import com.likelion.hackathon.dto.UserDto.LoginRequestDto;
-import com.likelion.hackathon.dto.UserDto.LoginResponseDto;
-import com.likelion.hackathon.dto.UserDto.SignupResponseDto;
+import com.likelion.hackathon.dto.MessageResponseDto;
+import com.likelion.hackathon.dto.UserDto.*;
 import com.likelion.hackathon.entity.User;
 import com.likelion.hackathon.repository.UserRepository;
 import com.likelion.hackathon.service.UserService;
 import com.likelion.hackathon.security.jwt.JwtUtil;
-import com.likelion.hackathon.dto.UserDto.SignupRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -53,6 +51,13 @@ public class UserController {
 
         Long savedUserId = userService.signup(type, request);
         return new SignupResponseDto("회원가입 성공", savedUserId);
+    }
+
+    @PostMapping("/signup/check-username")
+    @Operation(summary = "아이디 중복 확인", description = "아이디 사용가능한지 이미 있는지 메시지 반환")
+    public ResponseEntity<MessageResponseDto> checkUsername(@RequestBody UsernameCheckRequestDto requestDto) {
+        MessageResponseDto response = userService.checkUsername(requestDto.getUsername());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")

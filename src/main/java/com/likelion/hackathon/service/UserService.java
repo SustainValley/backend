@@ -1,5 +1,6 @@
 package com.likelion.hackathon.service;
 
+import com.likelion.hackathon.dto.MessageResponseDto;
 import com.likelion.hackathon.dto.UserDto.SignupRequestDto;
 import com.likelion.hackathon.entity.BusinessInfo;
 import com.likelion.hackathon.entity.User;
@@ -55,5 +56,14 @@ public class UserService {
 
         userRepository.save(user);
         return user.getId();
+    }
+
+    public MessageResponseDto checkUsername(String username) {
+        boolean exists = userRepository.existsByUsername(username);
+        if (exists) {
+            return new MessageResponseDto("이미 사용중인 아이디 입니다");
+        } else {
+            return new MessageResponseDto("사용 가능한 아이디 입니다");
+        }
     }
 }
