@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.likelion.hackathon.dto.UserDto.LoginResponseDto;
 import com.likelion.hackathon.entity.User;
+import com.likelion.hackathon.entity.UserType;
 import com.likelion.hackathon.repository.UserRepository;
 import com.likelion.hackathon.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -91,6 +92,7 @@ public class KakaoOAuthService {
                 newUser.setUsername(kakaoId);;
                 newUser.setNickname(nickname);
                 newUser.setPassword("");
+                newUser.setType(UserType.PER);
                 newUser.setProvider("kakao");
                 return userRepository.save(newUser);
             });

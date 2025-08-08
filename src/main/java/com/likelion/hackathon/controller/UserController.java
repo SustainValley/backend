@@ -4,6 +4,7 @@ import com.likelion.hackathon.dto.UserDto.LoginRequestDto;
 import com.likelion.hackathon.dto.UserDto.LoginResponseDto;
 import com.likelion.hackathon.dto.UserDto.SignupResponseDto;
 import com.likelion.hackathon.entity.User;
+import com.likelion.hackathon.repository.UserRepository;
 import com.likelion.hackathon.service.UserService;
 import com.likelion.hackathon.security.jwt.JwtUtil;
 import com.likelion.hackathon.dto.UserDto.SignupRequestDto;
@@ -25,6 +26,8 @@ public class UserController {
     private UserService userService;
     private JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserRepository userRepository;
 
     public UserController(UserService userService, JwtUtil jwtUtil, PasswordEncoder passwordEncoder) {
         this.userService = userService;
@@ -34,8 +37,21 @@ public class UserController {
 
     @PostMapping("/signup")
     @Operation(summary = "회원가입")
-    public SignupResponseDto signup(@RequestBody SignupRequestDto request) {
-        Long savedUserId = userService.signup(request.getUsername(), request.getPassword(), request.getProvider());
+    public SignupResponseDto signup(
+            @RequestParam String type,  // "per" 또는 "cor"
+            @RequestBody SignupRequestDto request
+    ) {
+        // 잘못된 type이면 예외
+        if (!type.equalsIgnoreCase("per") && !type.equalsIgnoreCase("cor")) {
+            throw new IllegalArgumentException("허용되지 않은 회원 타입입니다. (pro, cor만 가능)");
+        }
+
+        // 사장님(cor)은 username을 businessnumber로 대체
+        if (type.equalsIgnoreCase("cor")) {
+            request.setUsername(request.getBusinessnumber());
+        }
+
+        Long savedUserId = userService.signup(type, request);
         return new SignupResponseDto("회원가입 성공", savedUserId);
     }
 
@@ -45,7 +61,7 @@ public class UserController {
         String username = request.getUsername();
         String password = request.getPassword();
 
-        Optional<User> optionalUser = userService.findByUsername(username);
+        Optional<User> optionalUser = userRepository.findByUsername(username);
 
         if (optionalUser.isEmpty() || !passwordEncoder.matches(password, optionalUser.get().getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

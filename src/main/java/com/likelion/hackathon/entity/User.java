@@ -22,8 +22,9 @@ public class User {
 
     private String phoneNumber;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String type; // 일반회원: "per", 사장님: "cor"
+    private UserType type;  // PER, COR
 
     // 사장님 전용 정보 (1:1 관계)
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
