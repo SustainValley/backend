@@ -37,10 +37,6 @@ jwt:
 management:
   endpoint:
     metrics:
-      enabled: true
+      enabled: false  # 메트릭 엔드포인트 자체를 비활성화
     health:
       show-details: when-authorized
-  # 시스템 메트릭만 비활성화 (Docker 환경 문제 해결)
-  metrics:
-    enable:
-      system: false
