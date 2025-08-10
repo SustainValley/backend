@@ -17,6 +17,8 @@ env:
   OAUTH_KAKAO_TOKEN_URI: ${{ secrets.OAUTH_KAKAO_TOKEN_URI }}
   OAUTH_KAKAO_USER_INFO_URI: ${{ secrets.OAUTH_KAKAO_USER_INFO_URI }}
   JWT_SECRET: ${{ secrets.JWT_SECRET }}
+  SPRING_REDIS_HOST: ${{ secrets.SPRING_REDIS_HOST }}
+  SPRING_REDIS_PORT: ${{ secrets.SPRING_REDIS_PORT }}
 
 
 
@@ -80,6 +82,8 @@ jobs:
             OAUTH_KAKAO_TOKEN_URI=${{ secrets.OAUTH_KAKAO_TOKEN_URI }}
             OAUTH_KAKAO_USER_INFO_URI=${{ secrets.OAUTH_KAKAO_USER_INFO_URI }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
+            SPRING_REDIS_HOST=${{ secrets.SPRING_REDIS_HOST }}
+            SPRING_REDIS_PORT=${{ secrets.SPRING_REDIS_PORT }}
             EOF'
   
             sudo docker-compose stop
