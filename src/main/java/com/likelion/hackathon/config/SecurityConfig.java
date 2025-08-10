@@ -62,6 +62,7 @@ public class SecurityConfig {
             config.setAllowedOriginPatterns(Arrays.asList(
                     "https://" + frontendDomain,
                     "http://localhost:3003",
+                    "http://localhost:3000",
                     "https://localhost:3003",
                     "https://localhost:8080"
             ));
