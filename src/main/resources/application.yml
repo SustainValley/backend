@@ -3,6 +3,11 @@ server:
     context-path: /hackathon/api
 
 spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration
+      - org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration
+
   application:
     name: hackathon
   jpa:
@@ -37,6 +42,6 @@ jwt:
 management:
   endpoint:
     metrics:
-      enabled: false  # 메트릭 엔드포인트 자체를 비활성화
+      enabled: false
     health:
       show-details: when-authorized
