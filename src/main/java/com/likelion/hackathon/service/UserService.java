@@ -1,5 +1,7 @@
 package com.likelion.hackathon.service;
 
+import com.likelion.hackathon.apiPayload.code.status.ErrorStatus;
+import com.likelion.hackathon.apiPayload.exception.handler.ReservationHandler;
 import com.likelion.hackathon.dto.MessageResponseDto;
 import com.likelion.hackathon.dto.UserDto.SignupRequestDto;
 import com.likelion.hackathon.entity.BusinessInfo;
@@ -65,5 +67,11 @@ public class UserService {
         } else {
             return new MessageResponseDto("사용 가능한 아이디 입니다");
         }
+    }
+
+    // 사용자 반환 메서드
+    public User existUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ReservationHandler(ErrorStatus._USER_NOT_FOUND));
     }
 }
