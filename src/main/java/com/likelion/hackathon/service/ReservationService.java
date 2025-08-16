@@ -40,12 +40,22 @@ public class ReservationService {
         return getAllReservation(userId);
     }
 
+    // 예약 상세페이지
+    public ReservationDto.ReservationResponseDto getOneReservation(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ReservationHandler(ErrorStatus._RESERVATION_NOT_FOUND));
+        return ReservationConverter.toResponseDto(reservation);
+    }
+
     // 예약 삭제
     public void deleteReservation(Long userId, Long reservationId) {
         Reservation reservation = reservationRepository.findByIdAndUserId(userId, reservationId)
                 .orElseThrow(() -> new ReservationHandler(ErrorStatus._RESERVATION_NOT_FOUND));
         reservationRepository.delete(reservation);
     }
+
+    // 예약 하나만 조회
+
 
     // 사장님이 받은 전체 예약 조회
     public List<ReservationDto.ReservationResponseDto> getReservationsForOwner(Long ownerId) {
