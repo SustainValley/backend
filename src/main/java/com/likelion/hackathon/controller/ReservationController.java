@@ -23,6 +23,13 @@ public class ReservationController{
         return ApiResponse.onSuccess(list);
     }
 
+    @Operation(summary = "받은 예약 상세페이지", description = "하나의 예약 정보를 조회합니다.")
+    @GetMapping("/{reservationId}")
+    public ApiResponse<ReservationDto.ReservationResponseDto> getReservation(@PathVariable("reservationId") Long reservationId) {
+        ReservationDto.ReservationResponseDto dto = reservationService.getOneReservation(reservationId);
+        return ApiResponse.onSuccess(dto);
+    }
+
     @Operation(summary = "예약 생성", description = "새로운 예약을 생성합니다.")
     @PostMapping("/create")
     public ApiResponse<ReservationDto.ReservationResponseDto> createReservation(@RequestBody ReservationDto.ReservationRequestDto dto) {
