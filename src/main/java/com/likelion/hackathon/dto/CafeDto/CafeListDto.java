@@ -78,9 +78,11 @@ public class CafeListDto {
             operatingHoursStr = "영업시간 등록 전 입니다";
         }
 
+        String imageUrl = cafe.getImages().isEmpty() ? null : cafe.getImages().get(0).getImageUrl();
+
         return new CafeListDto(
                 cafe.getId(),
-                cafe.getImageUrl(),
+                imageUrl,
                 cafe.getName(),
                 operatingHoursStr,
                 cafe.getSpaceType(),

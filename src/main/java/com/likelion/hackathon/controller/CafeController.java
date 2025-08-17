@@ -6,6 +6,7 @@ import com.likelion.hackathon.dto.CafeDto.CafeResponseDto;
 import com.likelion.hackathon.dto.CafeDto.CafeUpdateRequestDto;
 import com.likelion.hackathon.dto.MessageResponseDto;
 import com.likelion.hackathon.entity.Cafe;
+import com.likelion.hackathon.entity.CafeImage;
 import com.likelion.hackathon.entity.CafeOperatingHours;
 import com.likelion.hackathon.repository.CafeRepository;
 import com.likelion.hackathon.service.CafeOperatingService;
@@ -47,6 +48,52 @@ public class CafeController {
         Cafe updatedCafe = cafeService.updateCafe(cafeId, request);
         return ResponseEntity.ok(new CafeResponseDto(updatedCafe));
     }
+
+    @PostMapping("/{cafeId}/images")
+    public ResponseEntity<MessageResponseDto> addCafeImage(
+            @PathVariable Long cafeId,
+            @RequestParam("image") MultipartFile imageFile) throws IOException {
+
+        Cafe cafe = cafeRepository.findById(cafeId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카페입니다."));
+
+        String uploadDir = System.getProperty("user.dir") + "/uploads/cafe/";
+        String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
+        Path filePath = Paths.get(uploadDir, fileName);
+
+        Files.createDirectories(filePath.getParent());
+        Files.write(filePath, imageFile.getBytes());
+
+        CafeImage cafeImage = new CafeImage();
+        cafeImage.setImageUrl("/uploads/cafe/" + fileName);
+        cafeImage.setCafe(cafe);
+        cafe.getImages().add(cafeImage);
+
+        cafeRepository.save(cafe);
+
+        return ResponseEntity.ok(new MessageResponseDto("카페 이미지가 추가되었습니다."));
+    }
+
+    @DeleteMapping("/{cafeId}/images/{imageId}/delete")
+    public ResponseEntity<MessageResponseDto> deleteCafeImage(
+            @PathVariable Long cafeId,
+            @PathVariable Long imageId) {
+
+        Cafe cafe = cafeRepository.findById(cafeId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카페입니다."));
+
+        CafeImage image = cafe.getImages().stream()
+                .filter(img -> img.getId().equals(imageId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이미지입니다."));
+
+        cafe.getImages().remove(image);
+        cafeRepository.save(cafe);
+
+        return ResponseEntity.ok(new MessageResponseDto("카페 이미지가 삭제되었습니다."));
+    }
+
+
 
     @GetMapping("/{cafeId}/operating")
     public ResponseEntity<CafeOperatingDto> getOperatingHours(@PathVariable Long cafeId) {
