@@ -60,6 +60,24 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @PatchMapping("/{userId}/addinfo")
+    @Operation(summary = "카카오 로그인 후 전화번호 추가 저장", description = "일반사용자 카카오 로그인 시 추가로 필요한 data 전화번호 저장")
+    public ResponseEntity<MessageResponseDto> addPhoneNumber(
+            @PathVariable Long userId,
+            @RequestBody Map<String, String> requestBody) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        String phoneNumber = requestBody.get("phonenumber");
+        user.setPhoneNumber(phoneNumber);
+
+        userRepository.save(user);
+
+        return ResponseEntity.ok(new MessageResponseDto("전화번호가 저장되었습니다."));
+    }
+
+
     @PostMapping("/login")
     @Operation(summary = "로그인", description = "로그인 성공시 토큰반환")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto request) {
