@@ -2,10 +2,11 @@ package com.likelion.hackathon.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalTime;
 
-@Getter
+@Getter @Setter
 @Entity
 public class Cafe {
     @Id

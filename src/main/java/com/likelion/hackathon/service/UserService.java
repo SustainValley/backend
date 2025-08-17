@@ -5,9 +5,11 @@ import com.likelion.hackathon.apiPayload.exception.handler.ReservationHandler;
 import com.likelion.hackathon.dto.MessageResponseDto;
 import com.likelion.hackathon.dto.UserDto.SignupRequestDto;
 import com.likelion.hackathon.entity.BusinessInfo;
+import com.likelion.hackathon.entity.Cafe;
 import com.likelion.hackathon.entity.User;
 import com.likelion.hackathon.entity.UserType;
 import com.likelion.hackathon.repository.BusinessInfoRepository;
+import com.likelion.hackathon.repository.CafeRepository;
 import com.likelion.hackathon.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
 import java.util.Optional;
 
 @Service
@@ -23,6 +26,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BusinessInfoRepository businessInfoRepository;
+    private final CafeRepository cafeRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -54,6 +58,20 @@ public class UserService {
             businessInfo.setUser(user);
 
             user.setBusinessInfo(businessInfo);
+
+            Cafe cafe = new Cafe();
+            cafe.setBusinessInfo(businessInfo);
+            cafe.setName(request.getBusinessname());
+            cafe.setLocation(request.getAddress());
+            // cafe.setMaxSeats(0L);
+            // cafe.setSeatFee(0L);
+            // cafe.setOpenTime(LocalTime.of(9, 0));
+            // cafe.setCloseTime(LocalTime.of(18, 0));
+            cafe.setContent("");// 빈 소개글
+
+            userRepository.save(user);
+            cafeRepository.save(cafe);
+
         }
 
         userRepository.save(user);
