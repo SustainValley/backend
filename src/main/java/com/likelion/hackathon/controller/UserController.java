@@ -4,9 +4,11 @@ import com.likelion.hackathon.dto.MessageResponseDto;
 import com.likelion.hackathon.dto.UserDto.*;
 import com.likelion.hackathon.entity.User;
 import com.likelion.hackathon.repository.UserRepository;
+import com.likelion.hackathon.security.jwt.TokenStatus;
 import com.likelion.hackathon.service.UserService;
 import com.likelion.hackathon.security.jwt.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,17 +22,17 @@ import java.util.Optional;
 @RequestMapping("/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
-    private JwtUtil jwtUtil;
+    private final UserService userService;
+    private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    public UserController(UserService userService, JwtUtil jwtUtil, PasswordEncoder passwordEncoder) {
+    @Autowired
+    public UserController(UserService userService, JwtUtil jwtUtil, PasswordEncoder passwordEncoder, UserRepository userRepository) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/signup")
@@ -99,6 +101,34 @@ public class UserController {
                 "로그인 성공", accessToken, refreshToken, user.getId()
         ));
 
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshAccessToken(@RequestHeader("Authorization") String refreshToken) {
+        if (refreshToken.startsWith("Bearer ")) {
+            refreshToken = refreshToken.substring(7);
+        }
+
+        TokenStatus status = jwtUtil.validateRefreshToken(refreshToken);
+
+        if (status == TokenStatus.EXPIRED) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new MessageResponseDto("리프레시 토큰이 만료되었습니다. 다시 로그인해주세요."));
+        } else if (status == TokenStatus.INVALID) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new MessageResponseDto("유효하지 않은 리프레시 토큰입니다."));
+        }
+
+        // 토큰에서 사용자 정보 추출
+        String username = jwtUtil.extractUsername(refreshToken);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        // 새로운 AccessToken 발급
+        String newAccessToken = jwtUtil.generateAccessToken(user);
+
+        // 새로운 RefreshToken 발급 여부는 전략에 따라 다름
+        return ResponseEntity.ok(new TokenResponseDto(newAccessToken, refreshToken));
     }
 
 }
