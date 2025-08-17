@@ -1,11 +1,15 @@
 package com.likelion.hackathon.service;
 
+import com.likelion.hackathon.dto.CafeDto.CafeListDto;
 import com.likelion.hackathon.dto.CafeDto.CafeUpdateRequestDto;
 import com.likelion.hackathon.entity.Cafe;
 import com.likelion.hackathon.repository.CafeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +24,6 @@ public class CafeService {
 
         if(request.getMinOrder() != null) cafe.setMinOrder(request.getMinOrder());
         if(request.getMaxCapacity() != null) cafe.setMaxSeats(request.getMaxCapacity().longValue());
-        if(request.getContent() != null) cafe.setContent(request.getContent());
         if(request.getSpaceType() != null) cafe.setSpaceType(request.getSpaceType());
 
         return cafeRepository.save(cafe);
@@ -30,6 +33,13 @@ public class CafeService {
     public Cafe getCafeById(Long cafeId) {
         return cafeRepository.findById(cafeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카페입니다."));
+    }
+
+    public List<CafeListDto> getCafeList() {
+        List<Cafe> cafes = cafeRepository.findAll();
+        return cafes.stream()
+                .map(CafeListDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
 }

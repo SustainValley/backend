@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter @Setter
 @Entity
@@ -19,7 +21,13 @@ public class Cafe {
     @JoinColumn(name = "business_info_id")
     private BusinessInfo businessInfo;
 
+    @OneToOne(mappedBy = "cafe", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private CafeOperatingHours operatingHours;
+
     private String name;
+
+    @OneToMany(mappedBy = "cafe", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CafeImage> images = new ArrayList<>();
 
     private String location;
 

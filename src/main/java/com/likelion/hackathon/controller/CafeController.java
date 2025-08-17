@@ -1,12 +1,27 @@
 package com.likelion.hackathon.controller;
 
+import com.likelion.hackathon.dto.CafeDto.CafeListDto;
+import com.likelion.hackathon.dto.CafeDto.CafeOperatingDto;
 import com.likelion.hackathon.dto.CafeDto.CafeResponseDto;
 import com.likelion.hackathon.dto.CafeDto.CafeUpdateRequestDto;
+import com.likelion.hackathon.dto.MessageResponseDto;
 import com.likelion.hackathon.entity.Cafe;
+import com.likelion.hackathon.entity.CafeImage;
+import com.likelion.hackathon.entity.CafeOperatingHours;
+import com.likelion.hackathon.repository.CafeRepository;
+import com.likelion.hackathon.service.CafeOperatingService;
 import com.likelion.hackathon.service.CafeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/cafe")
@@ -14,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 public class CafeController {
 
     private final CafeService cafeService;
+    private final CafeOperatingService operatingService;
+    private final CafeRepository cafeRepository;
 
     @GetMapping("/{cafeId}")
     public ResponseEntity<CafeResponseDto> getCafe(
@@ -30,6 +47,74 @@ public class CafeController {
     ) {
         Cafe updatedCafe = cafeService.updateCafe(cafeId, request);
         return ResponseEntity.ok(new CafeResponseDto(updatedCafe));
+    }
+
+    @PostMapping("/{cafeId}/images")
+    public ResponseEntity<MessageResponseDto> addCafeImage(
+            @PathVariable Long cafeId,
+            @RequestParam("image") MultipartFile imageFile) throws IOException {
+
+        Cafe cafe = cafeRepository.findById(cafeId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카페입니다."));
+
+        String uploadDir = System.getProperty("user.dir") + "/uploads/cafe/";
+        String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
+        Path filePath = Paths.get(uploadDir, fileName);
+
+        Files.createDirectories(filePath.getParent());
+        Files.write(filePath, imageFile.getBytes());
+
+        CafeImage cafeImage = new CafeImage();
+        cafeImage.setImageUrl("/uploads/cafe/" + fileName);
+        cafeImage.setCafe(cafe);
+        cafe.getImages().add(cafeImage);
+
+        cafeRepository.save(cafe);
+
+        return ResponseEntity.ok(new MessageResponseDto("카페 이미지가 추가되었습니다."));
+    }
+
+    @DeleteMapping("/{cafeId}/images/{imageId}/delete")
+    public ResponseEntity<MessageResponseDto> deleteCafeImage(
+            @PathVariable Long cafeId,
+            @PathVariable Long imageId) {
+
+        Cafe cafe = cafeRepository.findById(cafeId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카페입니다."));
+
+        CafeImage image = cafe.getImages().stream()
+                .filter(img -> img.getId().equals(imageId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이미지입니다."));
+
+        cafe.getImages().remove(image);
+        cafeRepository.save(cafe);
+
+        return ResponseEntity.ok(new MessageResponseDto("카페 이미지가 삭제되었습니다."));
+    }
+
+
+
+    @GetMapping("/{cafeId}/operating")
+    public ResponseEntity<CafeOperatingDto> getOperatingHours(@PathVariable Long cafeId) {
+        CafeOperatingHours hours = operatingService.getOperatingHours(cafeId);
+        return ResponseEntity.ok(CafeOperatingDto.fromEntity(hours));
+    }
+
+    @PatchMapping("/{cafeId}/operating/update")
+    public ResponseEntity<CafeOperatingDto> updateOperating(
+            @PathVariable Long cafeId,
+            @RequestBody CafeOperatingDto request
+    ) {
+        CafeOperatingHours updated = operatingService.updateOperatingHours(cafeId, request);
+        return ResponseEntity.ok(CafeOperatingDto.fromEntity(updated));
+    }
+
+
+    @GetMapping("/cafelist")
+    public ResponseEntity<List<CafeListDto>> getCafeList() {
+        List<CafeListDto> cafeList = cafeService.getCafeList();
+        return ResponseEntity.ok(cafeList);
     }
 
 }
