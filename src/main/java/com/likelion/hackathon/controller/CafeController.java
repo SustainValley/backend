@@ -11,6 +11,7 @@ import com.likelion.hackathon.entity.CafeOperatingHours;
 import com.likelion.hackathon.repository.CafeRepository;
 import com.likelion.hackathon.service.CafeOperatingService;
 import com.likelion.hackathon.service.CafeService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,7 @@ public class CafeController {
     private final CafeOperatingService operatingService;
     private final CafeRepository cafeRepository;
 
+    @Operation(summary = "특정 카페 정보 조회", description = "특정 카페의 모든 정보를 반환합니다")
     @GetMapping("/{cafeId}")
     public ResponseEntity<CafeResponseDto> getCafe(
             @PathVariable Long cafeId
@@ -40,6 +42,7 @@ public class CafeController {
         return ResponseEntity.ok(new CafeResponseDto(cafe));
     }
 
+    @Operation(summary = "특정 카페 정보 수정", description = "특정 카페의 정보를 수정하여 업데이트 후 모든 정보를 반환합니다")
     @PatchMapping("/{cafeId}/update")
     public ResponseEntity<CafeResponseDto> updateCafe(
             @PathVariable Long cafeId,
@@ -49,6 +52,7 @@ public class CafeController {
         return ResponseEntity.ok(new CafeResponseDto(updatedCafe));
     }
 
+    @Operation(summary = "특정 카페에 사진 추가", description = "특정 카페에 사진을 등록합니다.")
     @PostMapping("/{cafeId}/images")
     public ResponseEntity<MessageResponseDto> addCafeImage(
             @PathVariable Long cafeId,
@@ -74,6 +78,7 @@ public class CafeController {
         return ResponseEntity.ok(new MessageResponseDto("카페 이미지가 추가되었습니다."));
     }
 
+    @Operation(summary = "특정 카페의 특정 사진 삭제", description = "특정 카페의 특정 사진 삭제")
     @DeleteMapping("/{cafeId}/images/{imageId}/delete")
     public ResponseEntity<MessageResponseDto> deleteCafeImage(
             @PathVariable Long cafeId,
@@ -94,13 +99,14 @@ public class CafeController {
     }
 
 
-
+    @Operation(summary = "특정 카페의 운영시간 반환", description = "특정 카페의 운영시간을 반환합니다")
     @GetMapping("/{cafeId}/operating")
     public ResponseEntity<CafeOperatingDto> getOperatingHours(@PathVariable Long cafeId) {
         CafeOperatingHours hours = operatingService.getOperatingHours(cafeId);
         return ResponseEntity.ok(CafeOperatingDto.fromEntity(hours));
     }
 
+    @Operation(summary = "특정 카페의 운영시간 수정", description = "특정 카페의 운영시간 정보를 수정하여 업데이트 후 다시 반환합니다")
     @PatchMapping("/{cafeId}/operating/update")
     public ResponseEntity<CafeOperatingDto> updateOperating(
             @PathVariable Long cafeId,
@@ -110,7 +116,7 @@ public class CafeController {
         return ResponseEntity.ok(CafeOperatingDto.fromEntity(updated));
     }
 
-
+    @Operation(summary = "모든 카페 리스트 반환", description = "모든 카페를 특정 정보와 함께 리스트로 반환합니다")
     @GetMapping("/cafelist")
     public ResponseEntity<List<CafeListDto>> getCafeList() {
         List<CafeListDto> cafeList = cafeService.getCafeList();
