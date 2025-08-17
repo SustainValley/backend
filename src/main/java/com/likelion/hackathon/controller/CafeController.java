@@ -8,6 +8,7 @@ import com.likelion.hackathon.dto.MessageResponseDto;
 import com.likelion.hackathon.entity.Cafe;
 import com.likelion.hackathon.entity.CafeImage;
 import com.likelion.hackathon.entity.CafeOperatingHours;
+import com.likelion.hackathon.entity.enums.SpaceType;
 import com.likelion.hackathon.repository.CafeRepository;
 import com.likelion.hackathon.service.CafeOperatingService;
 import com.likelion.hackathon.service.CafeService;
@@ -122,5 +123,27 @@ public class CafeController {
         List<CafeListDto> cafeList = cafeService.getCafeList();
         return ResponseEntity.ok(cafeList);
     }
+
+    // 검색어 검색 API
+    @GetMapping("/search")
+    public ResponseEntity<List<CafeListDto>> searchByKeyword(@RequestParam String keyword) {
+        List<CafeListDto> result = cafeService.searchByKeyword(keyword).stream()
+                .map(CafeListDto::fromEntity)
+                .toList();
+        return ResponseEntity.ok(result);
+    }
+
+    // 필터 검색 API
+    @GetMapping("/filter")
+    public ResponseEntity<List<CafeListDto>> filterCafes(
+            @RequestParam(required = false) SpaceType spaceType,
+            @RequestParam(required = false) Long maxSeats
+    ) {
+        List<CafeListDto> result = cafeService.filterCafes(spaceType, maxSeats).stream()
+                .map(CafeListDto::fromEntity)
+                .toList();
+        return ResponseEntity.ok(result);
+    }
+
 
 }

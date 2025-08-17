@@ -17,7 +17,6 @@ public class CafeListDto {
     private String imageUrl;
     private String name;
     private String operatingHours;
-    private SpaceType spaceType;
     private Long maxSeats;
 
     public static CafeListDto fromEntity(Cafe cafe) {
@@ -85,7 +84,6 @@ public class CafeListDto {
                 imageUrl,
                 cafe.getName(),
                 operatingHoursStr,
-                cafe.getSpaceType(),
                 cafe.getMaxSeats()
         );
     }
