@@ -19,6 +19,8 @@ public class Cafe {
     @JoinColumn(name = "business_info_id")
     private BusinessInfo businessInfo;
 
+    private String imageUrl;
+
     private String name;
 
     private String location;
