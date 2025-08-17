@@ -45,3 +45,6 @@ management:
       enabled: false
     health:
       show-details: when-authorized
+
+frontend:
+  domain: mocacafe.vercel.app

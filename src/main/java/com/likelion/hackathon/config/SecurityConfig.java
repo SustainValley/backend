@@ -25,7 +25,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Value("${frontend.domain:localhost}")
-    private String frontendDomain = "mocacafe.vercel.app";
+    private String frontendDomain;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
