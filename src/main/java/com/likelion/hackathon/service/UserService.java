@@ -46,6 +46,7 @@ public class UserService {
         user.setProvider(request.getProvider());
         user.setPhoneNumber(request.getPhoneNumber());
         user.setType(userType);
+        user.setNickname(request.getNickname());
 
         // 사장님(cor)일 경우 BusinessInfo 생성
         if (userType == UserType.COR) {
