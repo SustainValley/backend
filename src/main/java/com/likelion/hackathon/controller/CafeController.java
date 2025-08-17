@@ -48,27 +48,6 @@ public class CafeController {
         return ResponseEntity.ok(new CafeResponseDto(updatedCafe));
     }
 
-    @PatchMapping("/{cafeId}/image/update")
-    public ResponseEntity<MessageResponseDto> updateCafeImage(
-            @PathVariable Long cafeId,
-            @RequestParam("image") MultipartFile imageFile) throws IOException {
-
-        Cafe cafe = cafeRepository.findById(cafeId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카페입니다."));
-
-        String uploadDir = System.getProperty("user.dir") + "/uploads/cafe/";
-        String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
-        Path filePath = Paths.get(uploadDir, fileName);
-
-        Files.createDirectories(filePath.getParent());
-        Files.write(filePath, imageFile.getBytes());
-
-        cafe.setImageUrl("/uploads/cafe/" + fileName);
-        cafeRepository.save(cafe);
-
-        return ResponseEntity.ok(new MessageResponseDto("카페 이미지가 업데이트되었습니다."));
-    }
-
     @GetMapping("/{cafeId}/operating")
     public ResponseEntity<CafeOperatingDto> getOperatingHours(@PathVariable Long cafeId) {
         CafeOperatingHours hours = operatingService.getOperatingHours(cafeId);
