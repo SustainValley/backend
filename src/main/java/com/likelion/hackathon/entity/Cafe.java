@@ -19,6 +19,9 @@ public class Cafe {
     @JoinColumn(name = "business_info_id")
     private BusinessInfo businessInfo;
 
+    @OneToOne(mappedBy = "cafe", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private CafeOperatingHours operatingHours;
+
     private String imageUrl;
 
     private String name;

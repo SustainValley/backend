@@ -1,5 +1,6 @@
 package com.likelion.hackathon.controller;
 
+import com.likelion.hackathon.dto.CafeDto.CafeListDto;
 import com.likelion.hackathon.dto.CafeDto.CafeOperatingDto;
 import com.likelion.hackathon.dto.CafeDto.CafeResponseDto;
 import com.likelion.hackathon.dto.CafeDto.CafeUpdateRequestDto;
@@ -10,6 +11,8 @@ import com.likelion.hackathon.service.CafeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/cafe")
@@ -49,6 +52,13 @@ public class CafeController {
     ) {
         CafeOperatingHours updated = operatingService.updateOperatingHours(cafeId, request);
         return ResponseEntity.ok(CafeOperatingDto.fromEntity(updated));
+    }
+
+
+    @GetMapping("/cafelist")
+    public ResponseEntity<List<CafeListDto>> getCafeList() {
+        List<CafeListDto> cafeList = cafeService.getCafeList();
+        return ResponseEntity.ok(cafeList);
     }
 
 }
