@@ -1,5 +1,6 @@
 package com.likelion.hackathon.entity;
 
+import com.likelion.hackathon.entity.enums.SpaceType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,10 +27,14 @@ public class Cafe {
 
     private String content;
 
-    private Long seatFee;
+    private String MinOrder;
 
     private LocalTime openTime;
 
     private LocalTime closeTime;
+
+    @Enumerated(EnumType.STRING)
+    private SpaceType spaceType;
+
 
 }
