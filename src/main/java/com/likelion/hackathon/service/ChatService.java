@@ -15,7 +15,9 @@ import com.likelion.hackathon.repository.ChatRoomUserRepository;
 import com.likelion.hackathon.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -28,6 +30,7 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomUserRepository chatRoomUserRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
 
     // 채팅방 내 모든 메세지 찾는 메서드
@@ -56,10 +59,26 @@ public class ChatService {
         return result.stream()
                 .map(row -> {
                     ChatRoomUser cru = (ChatRoomUser) row[0];
-                    String otherUserName = (String) row[1];
-                    return ChatConverter.toChatRoomResponseDto(cru, otherUserName);
+                    String otherNickname = (String) row[1];
+
+                    String key = "chat:unread:" + cru.getRoom().getId() + ":" + userId;
+
+                    Object unreadCountObj = redisTemplate.opsForValue().get(key);
+                    int unreadCount = unreadCountObj == null ? 0 : Integer.parseInt(unreadCountObj.toString());
+
+                    ChatRoomDto.ChatRoomResponseDto dto =
+                            ChatConverter.toChatRoomResponseDto(cru, otherNickname, unreadCount > 0);
+                    return dto;
                 })
                 .toList();
+    }
+
+    @Transactional
+    public void enterRoom(Long roomId, Long userId) {
+        chatRoomUserRepository.findById(userId)
+                .orElseThrow(() -> new ChatHandler(ErrorStatus._USER_NOT_FOUND));
+        String key = "chat:unread:" + roomId + ":" + userId;
+        redisTemplate.delete(key); // 초기화
     }
 
     // 채팅방 생성 메서드
@@ -69,8 +88,6 @@ public class ChatService {
         Optional<User> optionalUser2 = userRepository.findById(chatRoomRequestDto.getStoreUserId());
 
         if (optionalUser1.isEmpty() || optionalUser2.isEmpty()) {
-
-            System.out.println("optionalUser1.isEmpty() || optionalUser2.isEmpty()");
             throw new ChatHandler(ErrorStatus._USER_NOT_FOUND);
         }
 
@@ -94,7 +111,7 @@ public class ChatService {
         ChatRoomUser chatRoomUser2 = createChatRoomUser(user2, chatRoom);
 
 
-        return ChatConverter.toChatRoomResponseDto(chatRoomUser1, user2.getUsername());
+        return ChatConverter.toChatRoomResponseDto(chatRoomUser1, user2.getUsername(), false);
     }
 
     // 채팅 참여한 유저 저장
@@ -121,23 +138,4 @@ public class ChatService {
         return ChatConverter.toChatMessageDto(entity);
     }
 
-//
-//    public <T> void sendMessage(WebSocketSession receiver, ChatMessage message) {
-//        try {
-//            if(receiver != null && receiver.isOpen()) { // 타켓이 존재하고, 연결된 상태라면 메세지 전송
-//                receiver.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
-//            }
-//        }
-//        catch (IOException e) {
-//            log.error(e.getMessage(), e);
-//        }
-//    }
-//
-//    public List<ChatRoom> findAllRoom() {
-//        return new ArrayList<>(chatRooms.values());
-//    }
-//
-//    public ChatRoom findRoomById(String roomId) {
-//        return chatRooms.get(roomId);
-//    }
 }

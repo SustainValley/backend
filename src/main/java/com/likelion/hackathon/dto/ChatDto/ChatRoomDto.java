@@ -19,6 +19,7 @@ public class ChatRoomDto {
         private LocalDateTime lastMessageTime;
         private Long chatRoomUserId;
         private String title;
+        private boolean unread;
     }
 
     @Builder

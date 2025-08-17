@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface ChatRoomUserRepository extends JpaRepository<ChatRoomUser, Long> {
 
     @Query("""
-        SELECT cru, otherUser.username
+        SELECT cru, otherUser.nickname
         FROM ChatRoomUser cru
         JOIN cru.room r
         JOIN ChatRoomUser otherCru ON otherCru.room.id = r.id AND otherCru.user.id <> :userId
@@ -31,4 +31,6 @@ public interface ChatRoomUserRepository extends JpaRepository<ChatRoomUser, Long
     """)
     Optional<ChatRoom> findExistingRoomBetweenUsers(@Param("userId1") Long userId1,
                                                     @Param("userId2") Long userId2);
+
+    List<ChatRoomUser> findByRoomId(Long chatRoomId);
 }
