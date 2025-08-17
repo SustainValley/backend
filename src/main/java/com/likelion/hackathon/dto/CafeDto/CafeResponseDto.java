@@ -11,7 +11,6 @@ public class CafeResponseDto {
     private String location;
     private String minOrder;
     private Long maxSeats;
-    private String content;
     private SpaceType spaceType;
 
     public CafeResponseDto(Cafe cafe) {
@@ -20,7 +19,6 @@ public class CafeResponseDto {
         this.location = cafe.getLocation();
         this.minOrder = cafe.getMinOrder();
         this.maxSeats = cafe.getMaxSeats();
-        this.content = cafe.getContent();
         this.spaceType = cafe.getSpaceType();
     }
 }

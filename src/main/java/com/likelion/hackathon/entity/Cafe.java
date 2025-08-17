@@ -25,16 +25,9 @@ public class Cafe {
 
     private Long maxSeats;
 
-    private String content;
-
     private String MinOrder;
-
-    private LocalTime openTime;
-
-    private LocalTime closeTime;
 
     @Enumerated(EnumType.STRING)
     private SpaceType spaceType;
-
 
 }

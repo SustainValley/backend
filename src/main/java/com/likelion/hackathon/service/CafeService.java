@@ -25,4 +25,11 @@ public class CafeService {
 
         return cafeRepository.save(cafe);
     }
+
+    @Transactional(readOnly = true)
+    public Cafe getCafeById(Long cafeId) {
+        return cafeRepository.findById(cafeId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카페입니다."));
+    }
+
 }

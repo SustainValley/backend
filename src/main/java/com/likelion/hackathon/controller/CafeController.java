@@ -15,6 +15,14 @@ public class CafeController {
 
     private final CafeService cafeService;
 
+    @GetMapping("/{cafeId}")
+    public ResponseEntity<CafeResponseDto> getCafe(
+            @PathVariable Long cafeId
+    ) {
+        Cafe cafe = cafeService.getCafeById(cafeId);
+        return ResponseEntity.ok(new CafeResponseDto(cafe));
+    }
+
     @PatchMapping("/{cafeId}/update")
     public ResponseEntity<CafeResponseDto> updateCafe(
             @PathVariable Long cafeId,
