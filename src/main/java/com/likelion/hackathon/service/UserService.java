@@ -63,11 +63,6 @@ public class UserService {
             cafe.setBusinessInfo(businessInfo);
             cafe.setName(request.getBusinessname());
             cafe.setLocation(request.getAddress());
-            // cafe.setMaxSeats(0L);
-            // cafe.setSeatFee(0L);
-            // cafe.setOpenTime(LocalTime.of(9, 0));
-            // cafe.setCloseTime(LocalTime.of(18, 0));
-            cafe.setContent("");// 빈 소개글
 
             userRepository.save(user);
             cafeRepository.save(cafe);

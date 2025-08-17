@@ -20,7 +20,6 @@ public class CafeService {
 
         if(request.getMinOrder() != null) cafe.setMinOrder(request.getMinOrder());
         if(request.getMaxCapacity() != null) cafe.setMaxSeats(request.getMaxCapacity().longValue());
-        if(request.getContent() != null) cafe.setContent(request.getContent());
         if(request.getSpaceType() != null) cafe.setSpaceType(request.getSpaceType());
 
         return cafeRepository.save(cafe);

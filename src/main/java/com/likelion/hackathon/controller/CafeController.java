@@ -1,8 +1,11 @@
 package com.likelion.hackathon.controller;
 
+import com.likelion.hackathon.dto.CafeDto.CafeOperatingDto;
 import com.likelion.hackathon.dto.CafeDto.CafeResponseDto;
 import com.likelion.hackathon.dto.CafeDto.CafeUpdateRequestDto;
 import com.likelion.hackathon.entity.Cafe;
+import com.likelion.hackathon.entity.CafeOperatingHours;
+import com.likelion.hackathon.service.CafeOperatingService;
 import com.likelion.hackathon.service.CafeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class CafeController {
 
     private final CafeService cafeService;
+    private final CafeOperatingService operatingService;
 
     @GetMapping("/{cafeId}")
     public ResponseEntity<CafeResponseDto> getCafe(
@@ -30,6 +34,21 @@ public class CafeController {
     ) {
         Cafe updatedCafe = cafeService.updateCafe(cafeId, request);
         return ResponseEntity.ok(new CafeResponseDto(updatedCafe));
+    }
+
+    @GetMapping("/{cafeId}/operating")
+    public ResponseEntity<CafeOperatingDto> getOperatingHours(@PathVariable Long cafeId) {
+        CafeOperatingHours hours = operatingService.getOperatingHours(cafeId);
+        return ResponseEntity.ok(CafeOperatingDto.fromEntity(hours));
+    }
+
+    @PatchMapping("/{cafeId}/operating/update")
+    public ResponseEntity<CafeOperatingDto> updateOperating(
+            @PathVariable Long cafeId,
+            @RequestBody CafeOperatingDto request
+    ) {
+        CafeOperatingHours updated = operatingService.updateOperatingHours(cafeId, request);
+        return ResponseEntity.ok(CafeOperatingDto.fromEntity(updated));
     }
 
 }

@@ -1,9 +1,12 @@
 package com.likelion.hackathon.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalTime;
 
+@Setter @Getter
+@Entity
 public class CafeOperatingHours {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
