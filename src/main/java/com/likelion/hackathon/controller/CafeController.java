@@ -126,6 +126,7 @@ public class CafeController {
 
     // 검색어 검색 API
     @GetMapping("/search")
+    @Operation(summary = "키워드로 검색", description = "뒤에 ?keyword={keyword}")
     public ResponseEntity<List<CafeListDto>> searchByKeyword(@RequestParam String keyword) {
         List<CafeListDto> result = cafeService.searchByKeyword(keyword).stream()
                 .map(CafeListDto::fromEntity)
@@ -135,6 +136,7 @@ public class CafeController {
 
     // 필터 검색 API
     @GetMapping("/filter")
+    @Operation(summary = "필터 검색", description = "뒤에 ?spaceType={}, ?maxSeats={} 따로도 ?spaceType={}&maxSeats={} 같이도 가능")
     public ResponseEntity<List<CafeListDto>> filterCafes(
             @RequestParam(required = false) SpaceType spaceType,
             @RequestParam(required = false) Long maxSeats
