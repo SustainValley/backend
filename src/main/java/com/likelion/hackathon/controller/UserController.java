@@ -8,6 +8,7 @@ import com.likelion.hackathon.security.jwt.TokenStatus;
 import com.likelion.hackathon.service.UserService;
 import com.likelion.hackathon.security.jwt.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -102,9 +103,11 @@ public class UserController {
         ));
 
     }
-
+    @Operation(summary = "Refresh Access Token",
+            security = {@SecurityRequirement(name = "bearerAuth")})
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshAccessToken(@RequestHeader("Authorization") String refreshToken) {
+    public ResponseEntity<?> refreshAccessToken(
+            @RequestHeader("Authorization") String refreshToken) {
         if (refreshToken.startsWith("Bearer ")) {
             refreshToken = refreshToken.substring(7);
         }
