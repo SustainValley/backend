@@ -91,7 +91,7 @@ public class UserController {
 
         if (optionalUser.isEmpty() || !passwordEncoder.matches(password, optionalUser.get().getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new LoginResponseDto("로그인 실패", null, null, null));
+                    .body(new LoginResponseDto("로그인 실패", null, null, null,null));
         }
 
         User user = optionalUser.get();
@@ -99,7 +99,7 @@ public class UserController {
         String refreshToken = jwtUtil.generateRefreshToken(user);
 
         return ResponseEntity.ok(new LoginResponseDto(
-                "로그인 성공", accessToken, refreshToken, user.getId()
+                "로그인 성공", accessToken, refreshToken, user.getId(),user.getType()
         ));
 
     }
