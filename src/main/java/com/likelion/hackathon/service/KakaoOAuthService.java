@@ -102,7 +102,7 @@ public class KakaoOAuthService {
             String refreshToken = jwtUtil.generateRefreshToken(user);
 
             String message = "카카오 로그인 성공";
-            return new LoginResponseDto(message, accessToken, refreshToken, user.getId());
+            return new LoginResponseDto(message, accessToken, refreshToken, user.getId(),user.getType());
 
         } catch (Exception e) {
             throw new RuntimeException("카카오 사용자 정보 파싱 실패", e);
