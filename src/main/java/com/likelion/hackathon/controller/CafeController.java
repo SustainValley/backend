@@ -30,6 +30,7 @@ public class CafeController {
     private final CafeService cafeService;
     private final CafeOperatingService operatingService;
     private final CafeRepository cafeRepository;
+    private final CafeOperatingService cafeOperatingService;
 
     // 카페 이름 조회
     @GetMapping("/{cafeId}/name")
@@ -119,6 +120,17 @@ public class CafeController {
     ) {
         CafeOperatingHours updated = operatingService.updateOperatingHours(cafeId, request);
         return ResponseEntity.ok(CafeOperatingDto.fromEntity(updated));
+    }
+
+    // 카페 예약 가능 시간 설정/수정/막기
+    @PatchMapping("/{cafe_id}/abletime/update")
+    @Operation(summary = "카페 예약 가능 시간/상태 수정", description = "예약 가능 시작/종료 시간 및 상태를 수정합니다.")
+    public ResponseEntity<MessageResponseDto> updateAbleTime(
+            @PathVariable("cafe_id") Long cafeId,
+            @RequestBody CafeAbleTimeRequestDto dto) {
+
+        cafeOperatingService.updateAbleTime(cafeId, dto);
+        return ResponseEntity.ok(new MessageResponseDto("예약 가능 정보가 성공적으로 업데이트되었습니다."));
     }
 
     @Operation(summary = "모든 카페 리스트 반환", description = "모든 카페를 특정 정보와 함께 리스트로 반환합니다")

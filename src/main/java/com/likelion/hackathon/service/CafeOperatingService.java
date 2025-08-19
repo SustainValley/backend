@@ -1,5 +1,6 @@
 package com.likelion.hackathon.service;
 
+import com.likelion.hackathon.dto.CafeDto.CafeAbleTimeRequestDto;
 import com.likelion.hackathon.dto.CafeDto.CafeOperatingDto;
 import com.likelion.hackathon.entity.Cafe;
 import com.likelion.hackathon.entity.CafeOperatingHours;
@@ -67,6 +68,22 @@ public class CafeOperatingService {
         hours.setSunIsOpen(request.getSunIsOpen());
 
         return cafeOperatingHoursRepository.save(hours);
+    }
+
+    // 카페 예약 가능 시간 설정
+    @Transactional
+    public void updateAbleTime(Long cafeId, CafeAbleTimeRequestDto dto) {
+        Cafe cafe = cafeRepository.findById(cafeId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 카페입니다."));
+
+        cafe.setAbleStartTime(dto.getAbleStartTime());
+        cafe.setAbleEndTime(dto.getAbleEndTime());
+
+        if (dto.getReservationStatus() != null) {
+            cafe.setReservationStatus(dto.getReservationStatus());
+        }
+
+        cafeRepository.save(cafe);
     }
 
 }

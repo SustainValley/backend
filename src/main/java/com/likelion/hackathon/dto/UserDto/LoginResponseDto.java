@@ -14,4 +14,5 @@ public class LoginResponseDto {
     private String refreshToken;
     private Long userId;
     private UserType type;
+    private Long cafeId;
 }

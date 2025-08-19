@@ -2,7 +2,11 @@ package com.likelion.hackathon.controller;
 
 import com.likelion.hackathon.dto.MessageResponseDto;
 import com.likelion.hackathon.dto.UserDto.*;
+import com.likelion.hackathon.entity.BusinessInfo;
+import com.likelion.hackathon.entity.Cafe;
 import com.likelion.hackathon.entity.User;
+import com.likelion.hackathon.entity.UserType;
+import com.likelion.hackathon.repository.CafeRepository;
 import com.likelion.hackathon.repository.UserRepository;
 import com.likelion.hackathon.security.jwt.TokenStatus;
 import com.likelion.hackathon.service.UserService;
@@ -27,13 +31,15 @@ public class UserController {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final CafeRepository cafeRepository;
 
     @Autowired
-    public UserController(UserService userService, JwtUtil jwtUtil, PasswordEncoder passwordEncoder, UserRepository userRepository) {
+    public UserController(UserService userService, JwtUtil jwtUtil, PasswordEncoder passwordEncoder, UserRepository userRepository, CafeRepository cafeRepository) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.cafeRepository = cafeRepository;
     }
 
     @PostMapping("/signup")
@@ -91,15 +97,26 @@ public class UserController {
 
         if (optionalUser.isEmpty() || !passwordEncoder.matches(password, optionalUser.get().getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new LoginResponseDto("로그인 실패", null, null, null,null));
+                    .body(new LoginResponseDto("로그인 실패", null, null, null,null,null));
         }
 
         User user = optionalUser.get();
         String accessToken = jwtUtil.generateAccessToken(user);
         String refreshToken = jwtUtil.generateRefreshToken(user);
 
+        Long cafeId = null;
+        if (user.getType() == UserType.COR) {
+            BusinessInfo businessInfo = user.getBusinessInfo();
+            if (businessInfo != null) {
+                Cafe cafe = cafeRepository.findByBusinessInfo(businessInfo);
+                if (cafe != null) {
+                    cafeId = cafe.getId();
+                }
+            }
+        }
+
         return ResponseEntity.ok(new LoginResponseDto(
-                "로그인 성공", accessToken, refreshToken, user.getId(),user.getType()
+                "로그인 성공", accessToken, refreshToken, user.getId(),user.getType(),cafeId
         ));
 
     }

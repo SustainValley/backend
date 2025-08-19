@@ -1,12 +1,20 @@
 package com.likelion.hackathon.repository;
 
+import com.likelion.hackathon.entity.BusinessInfo;
 import com.likelion.hackathon.entity.Cafe;
+import com.likelion.hackathon.entity.enums.CafeReservationStatus;
 import com.likelion.hackathon.entity.enums.SpaceType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
 public interface CafeRepository extends JpaRepository<Cafe, Long> {
+
+    // 테이블 간 연결
+    Cafe findByBusinessInfo(BusinessInfo businessInfo);
+
+    // 예약 가능상태만 리스트에 표시
+    List<Cafe> findByReservationStatus(CafeReservationStatus status);
 
     // 검색어 검색
     List<Cafe> findByNameContainingIgnoreCase(String keyword);
