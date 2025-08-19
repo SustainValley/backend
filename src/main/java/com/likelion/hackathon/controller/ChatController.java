@@ -44,8 +44,8 @@ public class ChatController {
     // 채팅방 생성
     @PostMapping("/room/create")
     @Operation(summary = "채팅방 생성", description = "새로운 채팅을 개설합니다.")
-    public ApiResponse<ChatRoomDto.ChatRoomResponseDto> createChatRoom(@RequestBody ChatRoomDto.ChatRoomRequestDto chatRoomRequestDto) {
-        ChatRoomDto.ChatRoomResponseDto chatRoomResponseDto = chatService.createRoom(chatRoomRequestDto);
+    public ApiResponse<ChatRoomDto.ChatRoomCreateResponseDto> createChatRoom(@RequestBody ChatRoomDto.ChatRoomRequestDto chatRoomRequestDto) {
+        ChatRoomDto.ChatRoomCreateResponseDto chatRoomResponseDto = chatService.createRoom(chatRoomRequestDto);
         return ApiResponse.onSuccess(chatRoomResponseDto);
     }
 

@@ -14,12 +14,22 @@ public class ChatRoomDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class ChatRoomCreateResponseDto{
+        private Long roomId;
+        private Long chatRoomUserId;
+        private Long chatRoomStoreUserId;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ChatRoomResponseDto{
         private Long roomId;
-        private LocalDateTime lastMessageTime;
         private Long chatRoomUserId;
         private String title;
         private boolean unread;
+        private String lastMessage;
     }
 
     @Builder

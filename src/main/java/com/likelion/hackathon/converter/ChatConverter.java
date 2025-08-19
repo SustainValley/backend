@@ -28,15 +28,23 @@ public class ChatConverter {
                 .build();
     }
 
-    public static ChatRoomDto.ChatRoomResponseDto toChatRoomResponseDto(ChatRoomUser chatRoomUser, String title, boolean unread) {
+    public static ChatRoomDto.ChatRoomCreateResponseDto toChatRoomCreateResponseDto(ChatRoomUser chatRoomUser, ChatRoomUser chatRoomUser2) {
 
-        return ChatRoomDto.ChatRoomResponseDto.builder()
+        return ChatRoomDto.ChatRoomCreateResponseDto.builder()
                 .roomId(chatRoomUser.getRoom().getId())
-                .lastMessageTime(chatRoomUser.getRoom().getLastMessageTime())
                 .chatRoomUserId(chatRoomUser.getId())
-                .title(title)
-                .unread(unread)
+                .chatRoomStoreUserId(chatRoomUser2.getId())
                 .build();
     }
 
+    public static ChatRoomDto.ChatRoomResponseDto toChatRoomResponseDto(ChatRoomUser chatRoomUser, String title, boolean unread, String lastMessage) {
+
+        return ChatRoomDto.ChatRoomResponseDto.builder()
+                .roomId(chatRoomUser.getRoom().getId())
+                .chatRoomUserId(chatRoomUser.getId())
+                .title(title)
+                .lastMessage(lastMessage)
+                .unread(unread)
+                .build();
+    }
 }
