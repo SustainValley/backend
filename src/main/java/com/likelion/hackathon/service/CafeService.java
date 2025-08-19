@@ -1,6 +1,7 @@
 package com.likelion.hackathon.service;
 
 import com.likelion.hackathon.dto.CafeDto.CafeListDto;
+import com.likelion.hackathon.dto.CafeDto.CafeNameDto;
 import com.likelion.hackathon.dto.CafeDto.CafeUpdateRequestDto;
 import com.likelion.hackathon.entity.Cafe;
 import com.likelion.hackathon.entity.enums.SpaceType;
@@ -29,6 +30,13 @@ public class CafeService {
         if(request.getSpaceType() != null) cafe.setSpaceType(request.getSpaceType());
 
         return cafeRepository.save(cafe);
+    }
+
+    // 카페 이름 불러오기
+    public CafeNameDto getCafeNameById(Long cafeId) {
+        return cafeRepository.findById(cafeId)
+                .map(cafe -> new CafeNameDto(cafe.getId(), cafe.getName()))
+                .orElseThrow(() -> new RuntimeException("해당 카페를 찾을 수 없습니다."));
     }
 
     // 카페 상세 데이터 불러오기

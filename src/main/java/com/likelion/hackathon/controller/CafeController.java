@@ -1,9 +1,6 @@
 package com.likelion.hackathon.controller;
 
-import com.likelion.hackathon.dto.CafeDto.CafeListDto;
-import com.likelion.hackathon.dto.CafeDto.CafeOperatingDto;
-import com.likelion.hackathon.dto.CafeDto.CafeResponseDto;
-import com.likelion.hackathon.dto.CafeDto.CafeUpdateRequestDto;
+import com.likelion.hackathon.dto.CafeDto.*;
 import com.likelion.hackathon.dto.MessageResponseDto;
 import com.likelion.hackathon.entity.Cafe;
 import com.likelion.hackathon.entity.CafeImage;
@@ -33,6 +30,13 @@ public class CafeController {
     private final CafeService cafeService;
     private final CafeOperatingService operatingService;
     private final CafeRepository cafeRepository;
+
+    // 카페 이름 조회
+    @GetMapping("/{cafeId}/name")
+    @Operation(summary = "카페 이름 조회", description = "카페 id로 카페 이름을 반환합니다.")
+    public ResponseEntity<CafeNameDto> getCafeName(@PathVariable Long cafeId) {
+        return ResponseEntity.ok(cafeService.getCafeNameById(cafeId));
+    }
 
     @Operation(summary = "특정 카페 정보 조회", description = "특정 카페의 모든 정보를 반환합니다")
     @GetMapping("/{cafeId}")
