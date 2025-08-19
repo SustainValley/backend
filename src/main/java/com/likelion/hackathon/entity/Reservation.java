@@ -2,6 +2,7 @@ package com.likelion.hackathon.entity;
 
 import com.likelion.hackathon.dto.ReservationDto.ReservationDto;
 import com.likelion.hackathon.entity.enums.AttendanceStatus;
+import com.likelion.hackathon.entity.enums.CancelReason;
 import com.likelion.hackathon.entity.enums.MeetingType;
 import com.likelion.hackathon.entity.enums.ReservationStatus;
 import jakarta.persistence.*;
@@ -49,6 +50,9 @@ public class Reservation {
     @Enumerated(EnumType.STRING)
     private AttendanceStatus attendanceStatus = AttendanceStatus.BEFORE_USE;
 
+    @Enumerated(EnumType.STRING)
+    private CancelReason cancelReason;
+
 
     // DB 레벨에서 생성시에도 초기화되도록
     @PrePersist
@@ -67,5 +71,10 @@ public class Reservation {
 
     public void updateAttendanceStatus(AttendanceStatus attendanceStatus){
         this.attendanceStatus = attendanceStatus;
+    }
+
+    public void cancelReservation(CancelReason cancelReason) {
+        this.cancelReason = cancelReason;
+        updateReservationStatus(ReservationStatus.REJECTED);
     }
 }

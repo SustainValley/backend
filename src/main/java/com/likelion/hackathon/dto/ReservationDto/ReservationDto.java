@@ -1,6 +1,7 @@
 package com.likelion.hackathon.dto.ReservationDto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.likelion.hackathon.entity.enums.CancelReason;
 import com.likelion.hackathon.entity.enums.ReservationStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -44,6 +45,7 @@ public class ReservationDto {
         private int peopleCount;
         private String ReservationStatus;
         private String attendanceStatus;
+        private String cancelReason;
 
     }
 
@@ -54,6 +56,14 @@ public class ReservationDto {
     public static class ReservationStatusRequestDto {
         private Long reservationsId;
         private ReservationStatus ReservationStatus;
+    }
+
+    @Builder
+    @Getter @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CancelReservationRequestDto {
+        private CancelReason cancelReason;
     }
 
 }

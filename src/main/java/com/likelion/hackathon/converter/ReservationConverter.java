@@ -34,6 +34,9 @@ public class ReservationConverter {
                 .peopleCount(reservation.getPeopleCount())
                 .ReservationStatus(reservation.getReservationStatus().name())
                 .attendanceStatus(reservation.getAttendanceStatus().name())
+                .cancelReason(reservation.getCancelReason() == null
+                        ? null
+                        : reservation.getCancelReason().getDescription())
                 .build();
     }
 
