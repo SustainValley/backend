@@ -86,4 +86,11 @@ public class CafeOperatingService {
         cafeRepository.save(cafe);
     }
 
+    // 카페 예약 가능 시간 반환
+    public CafeAbleTimeRequestDto getReservationTime(Long cafeId) {
+        Cafe cafe = cafeRepository.findById(cafeId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카페입니다."));
+        return CafeAbleTimeRequestDto.fromEntity(cafe);
+    }
+
 }
