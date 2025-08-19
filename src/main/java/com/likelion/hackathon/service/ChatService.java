@@ -54,21 +54,20 @@ public class ChatService {
         if (! userRepository.existsById(userId)) {
             throw new ChatHandler(ErrorStatus._USER_NOT_FOUND);
         }
-        List<Object[]> result = chatRoomUserRepository.findChatRoomsWithOtherUserByUserId(userId);
+        List<Object[]> result = chatRoomUserRepository
+                .findChatRoomsWithOtherUserAndLastMessageByUserId(userId);
 
         return result.stream()
                 .map(row -> {
                     ChatRoomUser cru = (ChatRoomUser) row[0];
                     String otherNickname = (String) row[1];
+                    String lastMessage = row[2] != null ? (String) row[2] : "";
 
                     String key = "chat:unread:" + cru.getRoom().getId() + ":" + userId;
-
                     Object unreadCountObj = redisTemplate.opsForValue().get(key);
-                    int unreadCount = unreadCountObj == null ? 0 : Integer.parseInt(unreadCountObj.toString());
+                    boolean hasUnread = unreadCountObj != null && Integer.parseInt(unreadCountObj.toString()) > 0;
 
-                    ChatRoomDto.ChatRoomResponseDto dto =
-                            ChatConverter.toChatRoomResponseDto(cru, otherNickname, unreadCount > 0);
-                    return dto;
+                    return ChatConverter.toChatRoomResponseDto(cru, otherNickname, hasUnread, lastMessage);
                 })
                 .toList();
     }
@@ -83,7 +82,7 @@ public class ChatService {
 
     // 채팅방 생성 메서드
     // 메세지
-    public ChatRoomDto.ChatRoomResponseDto createRoom(ChatRoomDto.ChatRoomRequestDto chatRoomRequestDto) {
+    public ChatRoomDto.ChatRoomCreateResponseDto createRoom(ChatRoomDto.ChatRoomRequestDto chatRoomRequestDto) {
         Optional<User> optionalUser1 = userRepository.findById(chatRoomRequestDto.getUserId());
         Optional<User> optionalUser2 = userRepository.findById(chatRoomRequestDto.getStoreUserId());
 
@@ -110,8 +109,7 @@ public class ChatService {
         ChatRoomUser chatRoomUser1 = createChatRoomUser(user1, chatRoom);
         ChatRoomUser chatRoomUser2 = createChatRoomUser(user2, chatRoom);
 
-
-        return ChatConverter.toChatRoomResponseDto(chatRoomUser1, user2.getUsername(), false);
+        return ChatConverter.toChatRoomCreateResponseDto(chatRoomUser1, chatRoomUser2);
     }
 
     // 채팅 참여한 유저 저장

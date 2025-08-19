@@ -22,7 +22,20 @@ public interface ChatRoomUserRepository extends JpaRepository<ChatRoomUser, Long
     """)
     List<Object[]> findChatRoomsWithOtherUserByUserId(@Param("userId") Long userId);
 
-
+    @Query("""
+    SELECT cru, otherUser.nickname, m.message
+    FROM ChatRoomUser cru
+    JOIN cru.room r
+    JOIN ChatRoomUser otherCru ON otherCru.room.id = r.id AND otherCru.user.id <> :userId
+    JOIN otherCru.user otherUser
+    LEFT JOIN ChatMessage m ON m.room.id = r.id
+        AND m.createdAt = (SELECT MAX(m2.createdAt) 
+                           FROM ChatMessage m2 
+                           WHERE m2.room.id = r.id)
+    WHERE cru.user.id = :userId
+    ORDER BY r.lastMessageTime DESC
+""")
+    List<Object[]> findChatRoomsWithOtherUserAndLastMessageByUserId(@Param("userId") Long userId);
     @Query("""
         SELECT r
         FROM ChatRoom r
