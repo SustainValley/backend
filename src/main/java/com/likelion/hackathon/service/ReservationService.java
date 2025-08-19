@@ -8,6 +8,7 @@ import com.likelion.hackathon.entity.Cafe;
 import com.likelion.hackathon.entity.Reservation;
 import com.likelion.hackathon.entity.UserType;
 import com.likelion.hackathon.entity.enums.AttendanceStatus;
+import com.likelion.hackathon.entity.enums.ReservationStatus;
 import com.likelion.hackathon.repository.CafeRepository;
 import com.likelion.hackathon.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,13 +49,14 @@ public class ReservationService {
     }
 
     // 예약 삭제
-    public void deleteReservation(Long userId, Long reservationId) {
-        Reservation reservation = reservationRepository.findByIdAndUserId(userId, reservationId)
+    @Transactional
+    public void deleteReservation(Long userId, Long reservationId, ReservationDto.CancelReservationRequestDto dto) {
+        Reservation reservation = reservationRepository.findByIdAndUserId(reservationId, userId)
                 .orElseThrow(() -> new ReservationHandler(ErrorStatus._RESERVATION_NOT_FOUND));
-        reservationRepository.delete(reservation);
+        reservation.cancelReservation(dto.getCancelReason());
+//        reservation.updateReservationStatus(ReservationStatus.REJECTED);
+        System.out.println("deleteReservation: " + reservation.getCancelReason());
     }
-
-    // 예약 하나만 조회
 
 
     // 사장님이 받은 전체 예약 조회
@@ -70,10 +72,7 @@ public class ReservationService {
     @Transactional
     public ReservationDto.ReservationResponseDto updateAttendanceStatus(Long reservationId, String attendance) {
         Reservation reservation = getReservation(reservationId);
-
         reservation.updateAttendanceStatus(AttendanceStatus.valueOf(attendance));
-
-        System.out.println(reservation.getAttendanceStatus());
 
         return ReservationConverter.toResponseDto(reservation);
     }

@@ -39,10 +39,11 @@ public class ReservationController{
     }
 
     @Operation(summary = "예약 삭제", description = "해당 예약을 삭제합니다.")
-    @DeleteMapping("/delete/{reservationId}")
+    @PatchMapping("/delete/{reservationId}")
     public ApiResponse<String> deleteReservation(@RequestParam("userId") Long userId,
-                                                                                @PathVariable("reservationId") Long reservationId) {
-        reservationService.deleteReservation(userId, reservationId);
+                                                 @PathVariable("reservationId") Long reservationId,
+                                                 @RequestBody ReservationDto.CancelReservationRequestDto dto) {
+        reservationService.deleteReservation(userId, reservationId, dto);
         return ApiResponse.onSuccess("success");
     }
 
