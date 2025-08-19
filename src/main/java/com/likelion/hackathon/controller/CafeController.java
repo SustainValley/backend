@@ -133,6 +133,13 @@ public class CafeController {
         return ResponseEntity.ok(new MessageResponseDto("예약 가능 정보가 성공적으로 업데이트되었습니다."));
     }
 
+    //카페 예약 가능 시간 반환
+    @GetMapping("/{cafe_id}/abletime")
+    @Operation(summary = "카페 예약 가능시간 조회", description = "해당 카페의 예약 가능 시작/종료시간과 상태를 반환합니다.")
+    public ResponseEntity<CafeAbleTimeRequestDto> getAbleTime(@PathVariable("cafe_id") Long cafeId) {
+        return ResponseEntity.ok(cafeOperatingService.getReservationTime(cafeId));
+    }
+
     @Operation(summary = "모든 카페 리스트 반환", description = "모든 카페를 특정 정보와 함께 리스트로 반환합니다")
     @GetMapping("/cafelist")
     public ResponseEntity<List<CafeListDto>> getCafeList() {
