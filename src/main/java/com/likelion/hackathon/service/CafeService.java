@@ -4,6 +4,7 @@ import com.likelion.hackathon.dto.CafeDto.CafeListDto;
 import com.likelion.hackathon.dto.CafeDto.CafeNameDto;
 import com.likelion.hackathon.dto.CafeDto.CafeUpdateRequestDto;
 import com.likelion.hackathon.entity.Cafe;
+import com.likelion.hackathon.entity.enums.CafeReservationStatus;
 import com.likelion.hackathon.entity.enums.SpaceType;
 import com.likelion.hackathon.repository.CafeRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,7 @@ public class CafeService {
 
     // 전체 카페 리스트 반환
     public List<CafeListDto> getCafeList() {
-        List<Cafe> cafes = cafeRepository.findAll();
+        List<Cafe> cafes = cafeRepository.findByReservationStatus(CafeReservationStatus.AVAILABLE);
         return cafes.stream()
                 .map(CafeListDto::fromEntity)
                 .collect(Collectors.toList());
