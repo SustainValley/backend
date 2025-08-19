@@ -3,6 +3,7 @@ package com.likelion.hackathon.dto.CafeDto;
 import com.likelion.hackathon.entity.Cafe;
 import com.likelion.hackathon.entity.CafeImage;
 import com.likelion.hackathon.entity.CafeOperatingHours;
+import com.likelion.hackathon.entity.User;
 import com.likelion.hackathon.entity.enums.SpaceType;
 import lombok.Data;
 
@@ -22,6 +23,9 @@ public class CafeResponseDto {
     private List<String> imageUrls;
     private String operatingHours;
 
+    private Long ownerUserId;
+    private String phoneNumber;
+
     public CafeResponseDto(Cafe cafe) {
         this.id = cafe.getId();
         this.name = cafe.getName();
@@ -35,6 +39,12 @@ public class CafeResponseDto {
                 .toList();
 
         this.operatingHours = getOperatingStatus(cafe.getOperatingHours());
+
+        if (cafe.getBusinessInfo() != null && cafe.getBusinessInfo().getUser() != null) {
+            User owner = cafe.getBusinessInfo().getUser();
+            this.ownerUserId = owner.getId();
+            this.phoneNumber = owner.getPhoneNumber();
+        }
     }
 
     private String getOperatingStatus(CafeOperatingHours hours) {
