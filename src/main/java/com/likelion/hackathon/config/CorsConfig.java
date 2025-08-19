@@ -12,7 +12,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000", "https://mocacafe.vercel.app")
+                .allowedOrigins("http://localhost:3000", "https://mocacafe.vercel.app", "http://172.30.1.66:3000")
                 .allowedMethods("*");
     }
 }
