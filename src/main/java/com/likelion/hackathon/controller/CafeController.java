@@ -9,18 +9,14 @@ import com.likelion.hackathon.entity.enums.SpaceType;
 import com.likelion.hackathon.repository.CafeRepository;
 import com.likelion.hackathon.service.CafeOperatingService;
 import com.likelion.hackathon.service.CafeService;
+import com.likelion.hackathon.service.S3Service;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/cafe")
@@ -28,8 +24,8 @@ import java.util.UUID;
 public class CafeController {
 
     private final CafeService cafeService;
-    private final CafeOperatingService operatingService;
     private final CafeRepository cafeRepository;
+    private final S3Service s3Service;
     private final CafeOperatingService cafeOperatingService;
 
     // 카페 이름 조회
@@ -59,23 +55,19 @@ public class CafeController {
     }
 
     @Operation(summary = "특정 카페에 사진 추가", description = "특정 카페에 사진을 등록합니다.")
-    @PostMapping("/{cafeId}/images")
+    @PostMapping(value = "/{cafeId}/images", consumes = "multipart/form-data")
     public ResponseEntity<MessageResponseDto> addCafeImage(
             @PathVariable Long cafeId,
-            @RequestParam("image") MultipartFile imageFile) throws IOException {
+            @RequestParam("image") MultipartFile imageFile)  {
 
         Cafe cafe = cafeRepository.findById(cafeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카페입니다."));
 
-        String uploadDir = System.getProperty("user.dir") + "/uploads/cafe/";
-        String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
-        Path filePath = Paths.get(uploadDir, fileName);
-
-        Files.createDirectories(filePath.getParent());
-        Files.write(filePath, imageFile.getBytes());
+        // s3에 사진 업로드 후 경로 반환
+        String fileUrl = s3Service.uploadImage(imageFile, "cafe");
 
         CafeImage cafeImage = new CafeImage();
-        cafeImage.setImageUrl("/uploads/cafe/" + fileName);
+        cafeImage.setImageUrl(fileUrl);
         cafeImage.setCafe(cafe);
         cafe.getImages().add(cafeImage);
 
@@ -85,7 +77,7 @@ public class CafeController {
     }
 
     @Operation(summary = "특정 카페의 특정 사진 삭제", description = "특정 카페의 특정 사진 삭제")
-    @DeleteMapping("/{cafeId}/images/{imageId}/delete")
+    @DeleteMapping(value = "/{cafeId}/images/{imageId}/delete")
     public ResponseEntity<MessageResponseDto> deleteCafeImage(
             @PathVariable Long cafeId,
             @PathVariable Long imageId) {
@@ -98,6 +90,9 @@ public class CafeController {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이미지입니다."));
 
+        // s3에서 사진 삭제
+        s3Service.deleteImage(image.getImageUrl());
+
         cafe.getImages().remove(image);
         cafeRepository.save(cafe);
 
@@ -108,7 +103,7 @@ public class CafeController {
     @Operation(summary = "특정 카페의 운영시간 반환", description = "특정 카페의 운영시간을 반환합니다")
     @GetMapping("/{cafeId}/operating")
     public ResponseEntity<CafeOperatingDto> getOperatingHours(@PathVariable Long cafeId) {
-        CafeOperatingHours hours = operatingService.getOperatingHours(cafeId);
+        CafeOperatingHours hours = cafeOperatingService.getOperatingHours(cafeId);
         return ResponseEntity.ok(CafeOperatingDto.fromEntity(hours));
     }
 
@@ -118,7 +113,7 @@ public class CafeController {
             @PathVariable Long cafeId,
             @RequestBody CafeOperatingDto request
     ) {
-        CafeOperatingHours updated = operatingService.updateOperatingHours(cafeId, request);
+        CafeOperatingHours updated = cafeOperatingService.updateOperatingHours(cafeId, request);
         return ResponseEntity.ok(CafeOperatingDto.fromEntity(updated));
     }
 

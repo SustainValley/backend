@@ -23,6 +23,16 @@ spring:
       host: ${SPRING_REDIS_HOST:localhost}
       port: ${SPRING_REDIS_PORT:6379}
 
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_IAM_ACCESS_KEY}
+        secret-key: ${AWS_IAM_SECRET_KEY}
+      region:
+        static: ap-southeast-2
+      s3:
+        bucket: ${AWS_BUCKET_NAME}
+
 springdoc:
   api-docs:
     path: /api-docs
