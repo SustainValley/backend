@@ -19,6 +19,9 @@ env:
   JWT_SECRET: ${{ secrets.JWT_SECRET }}
   SPRING_REDIS_HOST: ${{ secrets.SPRING_REDIS_HOST }}
   SPRING_REDIS_PORT: ${{ secrets.SPRING_REDIS_PORT }}
+  AWS_IAM_ACCESS_KEY: ${{ secrets.AWS_IAM_ACCESS_KEY }}
+  AWS_IAM_SECRET_KEY: ${{ secrets.AWS_IAM_SECRET_KEY }}
+  AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
 
 
 
@@ -84,6 +87,9 @@ jobs:
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             SPRING_REDIS_HOST=${{ secrets.SPRING_REDIS_HOST }}
             SPRING_REDIS_PORT=${{ secrets.SPRING_REDIS_PORT }}
+            AWS_IAM_ACCESS_KEY=${{ secrets.AWS_IAM_ACCESS_KEY }}
+            AWS_IAM_SECRET_KEY=${{ secrets.AWS_IAM_SECRET_KEY }}
+            AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}
             EOF'
   
             sudo docker-compose stop
