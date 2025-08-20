@@ -29,7 +29,10 @@ public enum ErrorStatus implements BaseErrorCode {
     _CAFE_NOT_FOUND(HttpStatus.BAD_REQUEST, "CAFE404", "해당 카페를 찾을 수 없습니다."),
 
     // 예약 오류
-    _RESERVATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "RESERVATION404", "해당 예약을 찾을 수 없습니다.")
+    _RESERVATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "RESERVATION404", "해당 예약을 찾을 수 없습니다."),
+
+    // AWS S3 오류
+    _AWS_S3_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AWS-S3-500", "이미지 업로드를 실패했습니다.")
 
     ;
 
