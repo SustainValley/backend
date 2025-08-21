@@ -37,7 +37,8 @@ public class ReservationDto {
     public static class ReservationResponseDto {
         private Long reservationsId;
         private Long userId;
-        private String userName;
+        private String nickname;
+        private String phoneNumber;
         private Long cafeId;
         private String meetingType;
         private LocalDate date;
