@@ -23,9 +23,10 @@ public class ReservationConverter {
     }
 
     public static ReservationDto.ReservationResponseDto toResponseDto(Reservation reservation) {
+        User user = reservation.getUser();
         return ReservationDto.ReservationResponseDto.builder()
                 .reservationsId(reservation.getId())
-                .userId(reservation.getUser().getId())
+                .userId(user.getId())
                 .cafeId(reservation.getCafe().getId())
                 .meetingType(reservation.getMeetingType().name())
                 .date(reservation.getDate())
@@ -34,7 +35,8 @@ public class ReservationConverter {
                 .peopleCount(reservation.getPeopleCount())
                 .ReservationStatus(reservation.getReservationStatus().name())
                 .attendanceStatus(reservation.getAttendanceStatus().name())
-                .userName(reservation.getUser().getNickname())
+                .nickname(user.getNickname())
+                .phoneNumber(user.getPhoneNumber())
                 .cancelReason(reservation.getCancelReason() == null
                         ? null
                         : reservation.getCancelReason().getDescription())
