@@ -18,6 +18,7 @@ public class CafeListDto {
     private String name;
     private String operatingHours;
     private Long maxSeats;
+    private String address;
 
     public static CafeListDto fromEntity(Cafe cafe) {
         LocalTime open = null;
@@ -79,12 +80,15 @@ public class CafeListDto {
 
         String imageUrl = cafe.getImages().isEmpty() ? null : cafe.getImages().get(0).getImageUrl();
 
+        String address = cafe.getLocation();
+
         return new CafeListDto(
                 cafe.getId(),
                 imageUrl,
                 cafe.getName(),
                 operatingHoursStr,
-                cafe.getMaxSeats()
+                cafe.getMaxSeats(),
+                address
         );
     }
 }
