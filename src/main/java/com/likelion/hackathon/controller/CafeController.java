@@ -54,9 +54,10 @@ public class CafeController {
         return ResponseEntity.ok(new CafeResponseDto(updatedCafe));
     }
 
+    // 카페 사진 추가
     @Operation(summary = "특정 카페에 사진 추가", description = "특정 카페에 사진을 등록합니다.")
     @PostMapping(value = "/{cafeId}/images", consumes = "multipart/form-data")
-    public ResponseEntity<MessageResponseDto> addCafeImage(
+    public ResponseEntity<CafeImageResponseDto> addCafeImage(
             @PathVariable Long cafeId,
             @RequestParam("image") MultipartFile imageFile)  {
 
@@ -73,7 +74,10 @@ public class CafeController {
 
         cafeRepository.save(cafe);
 
-        return ResponseEntity.ok(new MessageResponseDto("카페 이미지가 추가되었습니다."));
+        return ResponseEntity.ok(new CafeImageResponseDto(
+                "카페 이미지가 추가되었습니다.",
+                cafeImage.getId()
+        ));
     }
 
     @Operation(summary = "특정 카페의 특정 사진 삭제", description = "특정 카페의 특정 사진 삭제")
