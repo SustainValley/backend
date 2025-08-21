@@ -56,10 +56,17 @@ public class UserController {
         // 사장님(cor)은 username을 businessnumber로 대체
         if (type.equalsIgnoreCase("cor")) {
             request.setUsername(request.getBusinessnumber());
+            request.setAddress(request.getAddress());
         }
 
         Long savedUserId = userService.signup(type, request);
-        return new SignupResponseDto("회원가입 성공", savedUserId);
+
+        String address = null;
+        if (type.equalsIgnoreCase("cor")) {
+            address = request.getAddress();
+        }
+
+        return new SignupResponseDto("회원가입 성공", savedUserId,address);
     }
 
     @PostMapping("/signup/check-username")
