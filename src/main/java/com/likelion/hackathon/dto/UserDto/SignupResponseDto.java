@@ -8,5 +8,4 @@ import lombok.Data;
 public class SignupResponseDto {
     private String message;
     private Long userId;
-    private String address;
 }
