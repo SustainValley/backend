@@ -2,10 +2,7 @@ package com.likelion.hackathon.converter;
 
 import com.likelion.hackathon.dto.ChatDto.ChatRoomDto;
 import com.likelion.hackathon.dto.ChatDto.ChatMessageDto;
-import com.likelion.hackathon.entity.ChatMessage;
-import com.likelion.hackathon.entity.ChatRoom;
-import com.likelion.hackathon.entity.ChatRoomUser;
-import com.likelion.hackathon.entity.User;
+import com.likelion.hackathon.entity.*;
 
 import java.time.format.DateTimeFormatter;
 
@@ -28,12 +25,19 @@ public class ChatConverter {
                 .build();
     }
 
-    public static ChatRoomDto.ChatRoomCreateResponseDto toChatRoomCreateResponseDto(ChatRoomUser chatRoomUser, ChatRoomUser chatRoomUser2) {
+    public static ChatRoomDto.ChatRoomCreateResponseDto toChatRoomCreateResponseDto(ChatRoomUser chatRoomUser, ChatRoomUser chatRoomUser2, Long cafeId) {
 
         return ChatRoomDto.ChatRoomCreateResponseDto.builder()
                 .roomId(chatRoomUser.getRoom().getId())
                 .chatRoomUserId(chatRoomUser.getId())
                 .chatRoomStoreUserId(chatRoomUser2.getId())
+                .cafeId(cafeId)
+                .build();
+    }
+
+    public static ChatRoom toChatRoomEntity(Cafe cafe){
+        return ChatRoom.builder()
+                .cafe(cafe)
                 .build();
     }
 
