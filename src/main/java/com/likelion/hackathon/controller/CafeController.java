@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +55,26 @@ public class CafeController {
     ) {
         Cafe updatedCafe = cafeService.updateCafe(cafeId, request);
         return ResponseEntity.ok(new CafeResponseDto(updatedCafe));
+    }
+
+    // 카페 프로모션 게시
+    @PostMapping("/{cafe_id}/promotions/save")
+    public ResponseEntity<Map<String, String>> savePromotion(
+            @PathVariable("cafe_id") Long cafeId,
+            @RequestBody Map<String, String> request) {
+
+        Cafe cafe = cafeRepository.findById(cafeId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 카페입니다."));
+
+        String customerPromotion = request.get("customerPromotion");
+        cafe.setCustomerPromotion(customerPromotion);
+
+        cafeRepository.save(cafe);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "프로모션이 정상 등록되었습니다.");
+
+        return ResponseEntity.ok(response);
     }
 
     // 카페 사진 추가

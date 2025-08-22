@@ -39,6 +39,9 @@ public class Cafe {
     @Enumerated(EnumType.STRING)
     private SpaceType spaceType;
 
+    @Column(columnDefinition = "TEXT")
+    private String customerPromotion;
+
     private LocalTime ableStartTime;
     private LocalTime ableEndTime;
 
