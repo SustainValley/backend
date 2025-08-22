@@ -92,7 +92,7 @@ public class ChatService {
 
     @Transactional
     public void enterRoom(Long roomId, Long userId) {
-        chatRoomUserRepository.findById(userId)
+        userRepository.findById(userId)
                 .orElseThrow(() -> new ChatHandler(ErrorStatus._USER_NOT_FOUND));
         String key = "chat:unread:" + roomId + ":" + userId;
         redisTemplate.delete(key); // 초기화
