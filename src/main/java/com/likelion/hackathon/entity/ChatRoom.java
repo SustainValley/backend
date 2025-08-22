@@ -19,7 +19,7 @@ public class ChatRoom  {
     private Long id;
     LocalDateTime lastMessageTime;
 
-    @OneToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     private Cafe cafe;
 
     @Builder
