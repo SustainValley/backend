@@ -79,9 +79,16 @@ public class UserController {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        String phoneNumber = requestBody.get("phonenumber");
-        user.setPhoneNumber(phoneNumber);
+        if (user.getPhoneNumber() != null && !user.getPhoneNumber().isEmpty()) {
+            throw new IllegalArgumentException("이미 전화번호가 등록되어 있습니다.");
+        }
 
+        String phoneNumber = requestBody.get("phonenumber");
+        if (phoneNumber == null || phoneNumber.isEmpty()) {
+            throw new IllegalArgumentException("전화번호가 비어있습니다.");
+        }
+
+        user.setPhoneNumber(phoneNumber);
         userRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponseDto("전화번호가 저장되었습니다."));
