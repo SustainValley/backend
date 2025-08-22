@@ -18,6 +18,7 @@ public class ChatRoomDto {
         private Long roomId;
         private Long chatRoomUserId;
         private Long chatRoomStoreUserId;
+        private Long cafeId;
     }
 
     @Builder
@@ -39,5 +40,6 @@ public class ChatRoomDto {
     public static class ChatRoomRequestDto{
         private Long userId;
         private Long storeUserId;
+        private Long cafeId;
     }
 }

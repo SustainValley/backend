@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter @Setter
+@NoArgsConstructor
 public class ChatRoom  {
 
     @Id
@@ -18,9 +19,13 @@ public class ChatRoom  {
     private Long id;
     LocalDateTime lastMessageTime;
 
+    @OneToOne()
+    private Cafe cafe;
+
     @Builder
-    public ChatRoom() {
+    public ChatRoom(Cafe cafe) {
         this.lastMessageTime = LocalDateTime.now();
+        this.cafe = cafe;
     }
 
 }

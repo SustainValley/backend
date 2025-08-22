@@ -1,5 +1,7 @@
 package com.likelion.hackathon.service;
 
+import com.likelion.hackathon.apiPayload.code.status.ErrorStatus;
+import com.likelion.hackathon.apiPayload.exception.handler.ReservationHandler;
 import com.likelion.hackathon.dto.CafeDto.CafeListDto;
 import com.likelion.hackathon.dto.CafeDto.CafeNameDto;
 import com.likelion.hackathon.dto.CafeDto.CafeUpdateRequestDto;
@@ -71,6 +73,11 @@ public class CafeService {
         } else {
             return cafeRepository.findAll(); // 둘 다 없으면 전체 반환
         }
+    }
+
+    public Cafe findCafe(Long cafeId) {
+        return cafeRepository.findById(cafeId)
+                .orElseThrow(() -> new ReservationHandler(ErrorStatus._CAFE_NOT_FOUND));
     }
 
 }

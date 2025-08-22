@@ -5,10 +5,7 @@ import com.likelion.hackathon.apiPayload.exception.handler.ChatHandler;
 import com.likelion.hackathon.converter.ChatConverter;
 import com.likelion.hackathon.dto.ChatDto.ChatRoomDto;
 import com.likelion.hackathon.dto.ChatDto.ChatMessageDto;
-import com.likelion.hackathon.entity.ChatMessage;
-import com.likelion.hackathon.entity.ChatRoom;
-import com.likelion.hackathon.entity.ChatRoomUser;
-import com.likelion.hackathon.entity.User;
+import com.likelion.hackathon.entity.*;
 import com.likelion.hackathon.repository.ChatMessageRepository;
 import com.likelion.hackathon.repository.ChatRoomRepository;
 import com.likelion.hackathon.repository.ChatRoomUserRepository;
@@ -31,6 +28,8 @@ public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomUserRepository chatRoomUserRepository;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final UserService userService;
+    private final CafeService cafeService;
 
 
     // 채팅방 내 모든 메세지 찾는 메서드
@@ -51,25 +50,44 @@ public class ChatService {
     // 모든 채팅방 찾는 메서드
     public List<ChatRoomDto.ChatRoomResponseDto> findAllChatRoom(Long userId) {
 
-        if (! userRepository.existsById(userId)) {
-            throw new ChatHandler(ErrorStatus._USER_NOT_FOUND);
+        User user = userService.existUser(userId);
+
+        if (user.getType() == UserType.COR){
+            List<Object[]> result = chatRoomUserRepository
+                    .findChatRoomsWithOtherUserAndLastMessageByUserId(userId);
+            return result.stream()
+                    .map(row -> {
+                        ChatRoomUser cru = (ChatRoomUser) row[0];
+                        String otherNickname = (String) row[1];
+                        String lastMessage = row[2] != null ? (String) row[2] : "";
+
+                        String key = "chat:unread:" + cru.getRoom().getId() + ":" + userId;
+                        Object unreadCountObj = redisTemplate.opsForValue().get(key);
+                        boolean hasUnread = unreadCountObj != null && Integer.parseInt(unreadCountObj.toString()) > 0;
+
+                        return ChatConverter.toChatRoomResponseDto(cru, otherNickname, hasUnread, lastMessage);
+                    })
+                    .toList();
         }
-        List<Object[]> result = chatRoomUserRepository
-                .findChatRoomsWithOtherUserAndLastMessageByUserId(userId);
+        else {
+            List<Object[]> result = chatRoomUserRepository
+                    .findChatRoomsWithCafeNameAndLastMessageByUserId(userId);
 
-        return result.stream()
-                .map(row -> {
-                    ChatRoomUser cru = (ChatRoomUser) row[0];
-                    String otherNickname = (String) row[1];
-                    String lastMessage = row[2] != null ? (String) row[2] : "";
+            return result.stream()
+                    .map(row -> {
+                        ChatRoomUser cru = (ChatRoomUser) row[0];
+                        String cafeName = (String) row[1];
+                        String lastMessage = row[2] != null ? (String) row[2] : "";
 
-                    String key = "chat:unread:" + cru.getRoom().getId() + ":" + userId;
-                    Object unreadCountObj = redisTemplate.opsForValue().get(key);
-                    boolean hasUnread = unreadCountObj != null && Integer.parseInt(unreadCountObj.toString()) > 0;
+                        String key = "chat:unread:" + cru.getRoom().getId() + ":" + userId;
+                        Object unreadCountObj = redisTemplate.opsForValue().get(key);
+                        boolean hasUnread = unreadCountObj != null && Integer.parseInt(unreadCountObj.toString()) > 0;
 
-                    return ChatConverter.toChatRoomResponseDto(cru, otherNickname, hasUnread, lastMessage);
-                })
-                .toList();
+                        return ChatConverter.toChatRoomResponseDto(cru, cafeName, hasUnread, lastMessage);
+                    })
+                    .toList();
+
+        }
     }
 
     @Transactional
@@ -101,7 +119,7 @@ public class ChatService {
             throw new ChatHandler(ErrorStatus._CHAT_ROOM_ALREADY_EXISTS);
         }
 
-        ChatRoom chatRoom = new ChatRoom();
+        ChatRoom chatRoom = ChatConverter.toChatRoomEntity(cafeService.findCafe(chatRoomRequestDto.getCafeId()));
 
         chatRoomRepository.save(chatRoom);
 
@@ -109,7 +127,7 @@ public class ChatService {
         ChatRoomUser chatRoomUser1 = createChatRoomUser(user1, chatRoom);
         ChatRoomUser chatRoomUser2 = createChatRoomUser(user2, chatRoom);
 
-        return ChatConverter.toChatRoomCreateResponseDto(chatRoomUser1, chatRoomUser2);
+        return ChatConverter.toChatRoomCreateResponseDto(chatRoomUser1, chatRoomUser2, chatRoomRequestDto.getCafeId());
     }
 
     // 채팅 참여한 유저 저장
