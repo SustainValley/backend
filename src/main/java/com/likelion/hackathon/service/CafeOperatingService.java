@@ -86,6 +86,31 @@ public class CafeOperatingService {
         cafeRepository.save(cafe);
     }
 
+    @Transactional
+    public void changeOperatingStatus(Long cafeId, String type) {
+        if (type == null || (!type.equalsIgnoreCase("on") && !type.equalsIgnoreCase("off"))) {
+            throw new IllegalArgumentException("type 값은 'on' 또는 'off' 이어야 합니다.");
+        }
+
+        Cafe cafe = cafeRepository.findById(cafeId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카페입니다."));
+
+        CafeOperatingHours hours = cafeOperatingHoursRepository.findByCafe(cafe)
+                .orElseThrow(() -> new IllegalArgumentException("등록된 운영시간 정보가 없습니다."));
+
+        boolean isOpen = type.equalsIgnoreCase("on");
+
+        hours.setMonIsOpen(isOpen);
+        hours.setTueIsOpen(isOpen);
+        hours.setWedIsOpen(isOpen);
+        hours.setThuIsOpen(isOpen);
+        hours.setFriIsOpen(isOpen);
+        hours.setSatIsOpen(isOpen);
+        hours.setSunIsOpen(isOpen);
+
+        cafeOperatingHoursRepository.save(hours);
+    }
+
     // 카페 예약 가능 시간 반환
     public CafeAbleTimeRequestDto getReservationTime(Long cafeId) {
         Cafe cafe = cafeRepository.findById(cafeId)

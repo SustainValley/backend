@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/cafe")
@@ -121,7 +122,21 @@ public class CafeController {
         return ResponseEntity.ok(CafeOperatingDto.fromEntity(updated));
     }
 
-    // 카페 예약 가능 시간 설정/수정/막기
+    // 카페 전체 운영중 온오프
+    @Operation(summary = "특정 카페의 운영상태 on/off", description = "특정 카페의 운영을 끄거나, 킬 수 있습니다.")
+    @PostMapping("/{cafe_id}/operating")
+    public ResponseEntity<MessageResponseDto> changeOpenClose(
+            @PathVariable("cafe_id") Long cafeId,
+            @RequestBody Map<String, String> requestBody) {
+
+        String type = requestBody.get("type");
+        cafeOperatingService.changeOperatingStatus(cafeId, type);
+
+        return ResponseEntity.ok(new MessageResponseDto(
+                "카페 [" + cafeId + "] 운영 상태가 " + type.toUpperCase() + " 으로 변경되었습니다."
+        ));
+    }
+        // 카페 예약 가능 시간 설정/수정/막기
     @PatchMapping("/{cafe_id}/abletime/update")
     @Operation(summary = "카페 예약 가능 시간/상태 수정", description = "예약 가능 시작/종료 시간 및 상태를 수정합니다.")
     public ResponseEntity<MessageResponseDto> updateAbleTime(
