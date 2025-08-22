@@ -15,6 +15,7 @@ import java.time.LocalTime;
 public class CafeListDto {
     private Long cafeId;
     private String imageUrl;
+    private Long imageId;
     private String name;
     private String operatingHours;
     private Long maxSeats;
@@ -80,6 +81,8 @@ public class CafeListDto {
         }
 
         String imageUrl = cafe.getImages().isEmpty() ? null : cafe.getImages().get(0).getImageUrl();
+        Long imageId = cafe.getImages().isEmpty() ? null : cafe.getImages().get(0).getId();
+
 
         SpaceType spaceType = cafe.getSpaceType();
         String address = cafe.getLocation();
@@ -87,6 +90,7 @@ public class CafeListDto {
         return new CafeListDto(
                 cafe.getId(),
                 imageUrl,
+                imageId,
                 cafe.getName(),
                 operatingHoursStr,
                 cafe.getMaxSeats(),
