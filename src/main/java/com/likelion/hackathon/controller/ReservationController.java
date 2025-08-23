@@ -3,8 +3,8 @@ package com.likelion.hackathon.controller;
 import com.likelion.hackathon.apiPayload.ApiResponse;
 import com.likelion.hackathon.dto.ReservationDto.ReservationDto;
 import com.likelion.hackathon.service.ReservationService;
-import com.likelion.hackathon.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +13,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/reservation")
+@Tag(name = "Reservation", description = "예약 관련 API")
 public class ReservationController{
     private final ReservationService reservationService;
 
@@ -33,8 +34,14 @@ public class ReservationController{
     @Operation(summary = "예약 생성", description = "새로운 예약을 생성합니다.")
     @PostMapping("/create")
     public ApiResponse<ReservationDto.ReservationResponseDto> createReservation(@RequestBody ReservationDto.ReservationRequestDto dto) {
-        System.out.println("createReservation Controller");
         ReservationDto.ReservationResponseDto reservationResponseDto = reservationService.createReservation(dto);
+        return ApiResponse.onSuccess(reservationResponseDto);
+    }
+
+    @Operation(summary = "바로이용 예약생성", description = "새로운 바로이용 예약을 생성합니다.")
+    @PostMapping("/create/now")
+    public ApiResponse<ReservationDto.ReservationResponseDto> createImmediateReservation(@RequestBody ReservationDto.ReservationRequestDto dto) {
+        ReservationDto.ReservationResponseDto reservationResponseDto = reservationService.createImmediateReservation(dto);
         return ApiResponse.onSuccess(reservationResponseDto);
     }
 
@@ -71,7 +78,7 @@ public class ReservationController{
     @Operation(summary = "카페 이용 여부 변경", description = "예약한 사용자가 카페 이용을 시작했는지, 끝났는지에 대한 정보를 변경합니다.")
     @PatchMapping("/owner/today/{reservationId}")
     public ApiResponse<ReservationDto.ReservationResponseDto> updateAttendanceStatus(@PathVariable("reservationId") Long reservationId,
-                                                                                     @RequestParam("attendance") String attendance) {
+                                                                                      @RequestParam("attendance") String attendance) {
         ReservationDto.ReservationResponseDto reservationResponseDto = reservationService.updateAttendanceStatus(reservationId, attendance);
         return ApiResponse.onSuccess(reservationResponseDto);
     }

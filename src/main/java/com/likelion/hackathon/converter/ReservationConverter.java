@@ -10,7 +10,7 @@ import com.likelion.hackathon.entity.enums.MeetingType;
 public class ReservationConverter {
 
 
-    public static Reservation toEntity(User user, Cafe cafe, ReservationDto.ReservationRequestDto dto) {
+    public static Reservation toEntity(User user, Cafe cafe, ReservationDto.ReservationRequestDto dto, boolean isImmediate) {
         return Reservation.builder()
                 .user(user)
                 .cafe(cafe)
@@ -19,6 +19,7 @@ public class ReservationConverter {
                 .endTime(dto.getEndTime())
                 .peopleCount(dto.getPeopleCount())
                 .meetingType(MeetingType.valueOf(dto.getMeetingType()))
+                .isImmediate(isImmediate)
                 .build();
     }
 
@@ -40,6 +41,7 @@ public class ReservationConverter {
                 .cancelReason(reservation.getCancelReason() == null
                         ? null
                         : reservation.getCancelReason().getDescription())
+                .isImmediate(reservation.getIsImmediate())
                 .build();
     }
 

@@ -8,14 +8,18 @@ import com.likelion.hackathon.entity.Cafe;
 import com.likelion.hackathon.entity.Reservation;
 import com.likelion.hackathon.entity.UserType;
 import com.likelion.hackathon.entity.enums.AttendanceStatus;
+import com.likelion.hackathon.entity.enums.CancelReason;
 import com.likelion.hackathon.entity.enums.ReservationStatus;
 import com.likelion.hackathon.repository.CafeRepository;
 import com.likelion.hackathon.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -24,14 +28,32 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final UserService userService;
     private final CafeRepository cafeRepository;
+    private final StringRedisTemplate redisTemplate;
+    private final ReservationMessageService reservationMessageService;
 
     // 예약 생성
     public ReservationDto.ReservationResponseDto createReservation(ReservationDto.ReservationRequestDto dto) {
         Cafe cafe = cafeRepository.findById(dto.getCafeId())
                 .orElseThrow(() -> new ReservationHandler(ErrorStatus._CAFE_NOT_FOUND));
 
-        Reservation reservation = ReservationConverter.toEntity(userService.existUser(dto.getUserId()), cafe, dto);
+        Reservation reservation = ReservationConverter.toEntity(userService.existUser(dto.getUserId()), cafe, dto, false);
         reservationRepository.save(reservation);
+
+        return ReservationConverter.toResponseDto(reservation);
+    }
+
+    // 바로이용 예약 생성
+    @Transactional
+    public ReservationDto.ReservationResponseDto createImmediateReservation(ReservationDto.ReservationRequestDto dto) {
+        Cafe cafe = cafeRepository.findById(dto.getCafeId())
+                .orElseThrow(() -> new ReservationHandler(ErrorStatus._CAFE_NOT_FOUND));
+
+        Reservation reservation = ReservationConverter.toEntity(userService.existUser(dto.getUserId()), cafe, dto, true);
+        reservationRepository.save(reservation);
+
+        // TTL 15분 키 설정
+        String key = "reservation:immediate:expire:" + reservation.getId();
+        redisTemplate.opsForValue().set(key, "1", Duration.ofMinutes(15));
 
         return ReservationConverter.toResponseDto(reservation);
     }
@@ -53,9 +75,15 @@ public class ReservationService {
     public void deleteReservation(Long userId, Long reservationId, ReservationDto.CancelReservationRequestDto dto) {
         Reservation reservation = reservationRepository.findByIdAndUserId(reservationId, userId)
                 .orElseThrow(() -> new ReservationHandler(ErrorStatus._RESERVATION_NOT_FOUND));
+        
+        // 예약 취소 처리
         reservation.cancelReservation(dto.getCancelReason());
-//        reservation.updateReservationStatus(ReservationStatus.REJECTED);
+        reservationRepository.save(reservation);
+        
         System.out.println("deleteReservation: " + reservation.getCancelReason());
+        
+        // 메시지 서비스를 통한 메시지 발송
+        reservationMessageService.sendReservationCanceled(reservationId, reservation.getReservationStatus() ,dto.getCancelReason());
     }
 
 
@@ -74,6 +102,12 @@ public class ReservationService {
         Reservation reservation = getReservation(reservationId);
         reservation.updateAttendanceStatus(AttendanceStatus.valueOf(attendance));
 
+        if (reservation.getIsImmediate() && AttendanceStatus.IN_USE.equals(reservation.getAttendanceStatus())) {
+            System.out.println("checkIn 시작");
+            checkIn(reservationId);
+        }
+
+
         return ReservationConverter.toResponseDto(reservation);
     }
 
@@ -82,9 +116,22 @@ public class ReservationService {
     @Transactional
     public ReservationDto.ReservationResponseDto updateReservationStatus(ReservationDto.ReservationStatusRequestDto dto) {
         Reservation reservation = getReservation(dto.getReservationsId());
-        System.out.println("updateReservationStatus getReservationStatus: "+ dto.getReservationStatus());
+
+
+        if (reservation.getIsImmediate() && ReservationStatus.APPROVED.equals(dto.getReservationStatus())) {
+            // TTL 10초 키 설정 (테스트용)
+            System.out.println("updateReservationStatus ttl 설정");
+            String key = "reservation:immediate:expire:" + reservation.getId();
+            redisTemplate.opsForValue().set(key, "1", Duration.ofSeconds(60));
+            System.out.println("updateReservationStatus ttl 설정 완료: " + key);
+
+            reservation.updateReservationApprovedTime();
+
+            System.out.println("updateReservationStatus updateReservationApprovedTime: " + reservation.getReservationApprovedTime());
+        }
 
         reservation.updateReservationStatus(dto.getReservationStatus());
+
         return ReservationConverter.toResponseDto(reservation);
     }
 
@@ -114,6 +161,30 @@ public class ReservationService {
     public Reservation getReservation(Long id) {
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationHandler(ErrorStatus._RESERVATION_NOT_FOUND));
+    }
+
+    // 바로이용 사용자가 입장했을 떄
+    @Transactional
+    public void checkIn(Long reservationId) {
+        var r = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ReservationHandler(ErrorStatus._IMMEDIATE_RESERVATION_EXPIRED));
+        if (Boolean.TRUE.equals(r.getIsImmediate()) && ReservationStatus.APPROVED.equals(r.getReservationStatus())) {
+            // 생성시점 기준 2분 체크
+            if (r.getReservationApprovedTime().isBefore(LocalDateTime.now().minusMinutes(2))) {
+                r.cancelReservation(CancelReason.NO_SHOW);
+                reservationRepository.save(r);
+
+                System.out.println("checkIn 노쇼 처리");
+                
+                throw new ReservationHandler(ErrorStatus._IMMEDIATE_RESERVATION_EXPIRED);
+            }
+
+            // Redis 키 삭제 (만료 이벤트 발생 안 하도록)
+            String key = "reservation:immediate:expire:" + reservationId;
+            redisTemplate.delete(key);
+        }
+
+        System.out.println("checkIn 종료");
     }
 
 }
