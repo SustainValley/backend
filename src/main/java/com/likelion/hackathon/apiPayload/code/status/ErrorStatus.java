@@ -30,9 +30,13 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 예약 오류
     _RESERVATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "RESERVATION404", "해당 예약을 찾을 수 없습니다."),
+    _IMMEDIATE_RESERVATION_EXPIRED(HttpStatus.BAD_REQUEST, "RESERVATION405", "바로예약 15분 초과로 취소되었습니다."),
 
     // AWS S3 오류
-    _AWS_S3_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AWS-S3-500", "이미지 업로드를 실패했습니다.")
+    _AWS_S3_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AWS-S3-500", "이미지 업로드를 실패했습니다."),
+
+    // 메세지 전송 오류
+    _WEBSOCKET_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "WEBSOCKET500", "메세지 전송에 실패했습니다.")
 
     ;
 

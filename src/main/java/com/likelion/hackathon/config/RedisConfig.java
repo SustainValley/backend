@@ -12,6 +12,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -38,7 +39,7 @@ public class RedisConfig {
         return new LettuceConnectionFactory(host, port);
     }
 
-    @Bean
+    @Bean("chatMessageListenerContainer")
     public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory, RedisSubscribeListener listener) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);

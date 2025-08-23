@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
@@ -53,6 +54,11 @@ public class Reservation {
     @Enumerated(EnumType.STRING)
     private CancelReason cancelReason;
 
+    @Column(name = "is_immediate", nullable = false)
+    private Boolean isImmediate = false;
+
+    private LocalDateTime reservationApprovedTime;
+
 
     // DB 레벨에서 생성시에도 초기화되도록
     @PrePersist
@@ -62,6 +68,9 @@ public class Reservation {
         }
         if (this.attendanceStatus == null) {
             this.attendanceStatus = AttendanceStatus.BEFORE_USE;
+        }
+        if (this.isImmediate == null) {
+            this.isImmediate = false;
         }
     }
 
@@ -76,5 +85,9 @@ public class Reservation {
     public void cancelReservation(CancelReason cancelReason) {
         this.cancelReason = cancelReason;
         updateReservationStatus(ReservationStatus.REJECTED);
+    }
+
+    public void updateReservationApprovedTime(){
+        this.reservationApprovedTime = LocalDateTime.now();
     }
 }

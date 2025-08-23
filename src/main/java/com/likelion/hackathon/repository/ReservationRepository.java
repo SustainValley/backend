@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,5 +37,14 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     );
 
     Optional<Reservation> findByIdAndUserId(Long reservationId, Long userId);
+
+    @Query("""
+        select r from Reservation r
+        where r.isImmediate = true
+          and r.reservationStatus = com.likelion.hackathon.entity.enums.ReservationStatus.APPROVED
+          and r.attendanceStatus = com.likelion.hackathon.entity.enums.AttendanceStatus.BEFORE_USE
+          and r.reservationApprovedTime < :deadline
+        """)
+    List<Reservation> findExpiredImmediate(LocalDateTime deadline);
 
 }
