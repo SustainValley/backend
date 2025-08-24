@@ -46,12 +46,14 @@ public class RedisSubscribeListener implements MessageListener {
                         chatRoomRepository.save(chatRoom);
                     });
 
+            Long userId = chatRoomUserRepository.findById(messageDto.getSender()).get().getUser().getId();
+
             // 안읽음 카운트 증가 (보낸 사람 제외)
             List<ChatRoomUser> participants = chatRoomUserRepository.findByRoomId(messageDto.getRoomId());
             for (ChatRoomUser cru : participants) {
-                if (!cru.getUser().getId().equals(messageDto.getSender())) {
+                if (!cru.getUser().getId().equals(userId)) {
                     String key = "chat:unread:" + messageDto.getRoomId() + ":" + cru.getUser().getId();
-                    System.out.println("sender id = " + cru.getId());
+                    System.out.println("sender user id = " + userId);
                     template.opsForValue().increment(key);
                 }
             }
