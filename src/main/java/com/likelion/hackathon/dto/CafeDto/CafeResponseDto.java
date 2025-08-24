@@ -20,6 +20,7 @@ public class CafeResponseDto {
     private String minOrder;
     private Long maxSeats;
     private SpaceType spaceType;
+    private String customerPromotion;
     private List<CafeImageDto> images;
     private String operatingHours;
     private Long ownerUserId;
@@ -32,6 +33,7 @@ public class CafeResponseDto {
         this.minOrder = cafe.getMinOrder();
         this.maxSeats = cafe.getMaxSeats();
         this.spaceType = cafe.getSpaceType();
+        this.customerPromotion = cafe.getCustomerPromotion();
 
         this.images = cafe.getImages().stream()
                 .map(img -> new CafeImageDto(img.getId(), img.getImageUrl()))
