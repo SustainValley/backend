@@ -25,10 +25,12 @@ public class ReservationConverter {
 
     public static ReservationDto.ReservationResponseDto toResponseDto(Reservation reservation) {
         User user = reservation.getUser();
+        Cafe cafe = reservation.getCafe();;
         return ReservationDto.ReservationResponseDto.builder()
                 .reservationsId(reservation.getId())
                 .userId(user.getId())
-                .cafeId(reservation.getCafe().getId())
+                .cafeId(cafe.getId())
+                .cafeName(cafe.getName())
                 .meetingType(reservation.getMeetingType().name())
                 .date(reservation.getDate())
                 .startTime(reservation.getStartTime())

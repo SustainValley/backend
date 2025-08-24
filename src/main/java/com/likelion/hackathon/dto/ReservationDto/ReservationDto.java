@@ -40,6 +40,7 @@ public class ReservationDto {
         private String nickname;
         private String phoneNumber;
         private Long cafeId;
+        private String cafeName;
         private String meetingType;
         private LocalDate date;
         private LocalTime startTime;
