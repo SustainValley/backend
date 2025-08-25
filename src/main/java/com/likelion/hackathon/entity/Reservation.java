@@ -43,6 +43,8 @@ public class Reservation {
     @JsonFormat(pattern = "HH:mm:ss", timezone = "Asia/Seoul")
     private LocalTime endTime;
 
+    private LocalDateTime testTime;
+
     private int peopleCount;
 
     @Enumerated(EnumType.STRING)
