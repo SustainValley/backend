@@ -8,11 +8,14 @@ import com.likelion.hackathon.service.KakaoOAuthService;
 import com.likelion.hackathon.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/oauth")
@@ -34,16 +37,16 @@ public class OAuthController {
     public ResponseEntity<LoginResponseWithPhoneDto> kakaoCallbackWithPhone(@RequestParam String code) {
         LoginResponseDto loginResponse = kakaoOAuthService.kakaoLogin(code);
 
-        User user = userRepository.findById(loginResponse.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        Optional<User> optionalUser = userRepository.findById(loginResponse.getUserId());
+        if (optionalUser.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
 
-        boolean hasPhoneNumber = (user.getPhoneNumber() != null && !user.getPhoneNumber().isEmpty());
+        User user = optionalUser.get();
+        boolean hasPhoneNumber = user.getPhoneNumber() != null && !user.getPhoneNumber().isEmpty();
 
-        LoginResponseWithPhoneDto response = new LoginResponseWithPhoneDto(
-                loginResponse,
-                hasPhoneNumber
-        );
-
+        LoginResponseWithPhoneDto response = new LoginResponseWithPhoneDto(loginResponse, hasPhoneNumber);
         return ResponseEntity.ok(response);
     }
 
