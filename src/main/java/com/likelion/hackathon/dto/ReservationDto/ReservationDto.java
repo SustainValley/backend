@@ -31,8 +31,6 @@ public class ReservationDto {
         @JsonFormat(pattern = "HH:mm:ss")
         @Schema(type = "string", example = "15:00:00", description = "예약 종료 시간(HH:mm:ss)")
         private LocalTime endTime;
-
-        private LocalDateTime testTime;
     }
 
     @Builder
@@ -55,8 +53,6 @@ public class ReservationDto {
 
         @JsonFormat(pattern = "HH:mm:ss", timezone = "Asia/Seoul")
         private LocalTime endTime;
-
-        private LocalDateTime testTime;
 
         private int peopleCount;
         private String ReservationStatus;
