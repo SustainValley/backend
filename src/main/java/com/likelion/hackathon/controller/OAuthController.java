@@ -25,14 +25,14 @@ public class OAuthController {
     private final KakaoOAuthService kakaoOAuthService;
     private final UserRepository userRepository;
 
-    @GetMapping("/kakao/callback")
+    @GetMapping("/kakao/callback/2")
     @Operation(summary = "카카오 로그인", description = "기본 카카오 로그인")
     public ResponseEntity<LoginResponseDto> kakaoCallback(@RequestParam String code) {
         LoginResponseDto loginResponse = kakaoOAuthService.kakaoLogin(code);
         return ResponseEntity.ok(loginResponse);
     }
 
-    @GetMapping("/kakao/callback/2")
+    @GetMapping("/kakao/callback")
     @Operation(summary = "카카오 로그인 (전화번호 여부 포함)", description = "카카오 로그인 후 전화번호 등록 여부를 함께 반환합니다.")
     public ResponseEntity<LoginResponseWithPhoneDto> kakaoCallbackWithPhone(@RequestParam String code) {
         LoginResponseDto loginResponse = kakaoOAuthService.kakaoLogin(code);
