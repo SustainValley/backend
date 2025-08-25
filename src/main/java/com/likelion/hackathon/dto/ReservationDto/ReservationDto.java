@@ -43,8 +43,13 @@ public class ReservationDto {
         private String cafeName;
         private String meetingType;
         private LocalDate date;
+
+        @JsonFormat(pattern = "HH:mm:ss", timezone = "Asia/Seoul")
         private LocalTime startTime;
+
+        @JsonFormat(pattern = "HH:mm:ss", timezone = "Asia/Seoul")
         private LocalTime endTime;
+
         private int peopleCount;
         private String ReservationStatus;
         private String attendanceStatus;

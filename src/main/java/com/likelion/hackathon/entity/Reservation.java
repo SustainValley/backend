@@ -1,5 +1,6 @@
 package com.likelion.hackathon.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.likelion.hackathon.dto.ReservationDto.ReservationDto;
 import com.likelion.hackathon.entity.enums.AttendanceStatus;
 import com.likelion.hackathon.entity.enums.CancelReason;
@@ -36,8 +37,10 @@ public class Reservation {
 
     private LocalDate date;
 
+    @JsonFormat(pattern = "HH:mm:ss", timezone = "Asia/Seoul")
     private LocalTime startTime;
 
+    @JsonFormat(pattern = "HH:mm:ss", timezone = "Asia/Seoul")
     private LocalTime endTime;
 
     private int peopleCount;
