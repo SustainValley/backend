@@ -27,34 +27,26 @@ public class ReservationExpireListener implements ApplicationListener<RedisKeyEx
         // Redis 키
         String expiredKey = new String((byte[]) event.getSource());
 
-        System.out.println("Redis 키 만료 이벤트 발생 - 원본 키: " + expiredKey);
-        
         if (!expiredKey.startsWith("reservation:immediate:expire:")) {
-            System.out.println("처리 대상이 아닌 키: " + expiredKey);
             return;
         }
 
         Long reservationId = Long.valueOf(expiredKey.substring("reservation:immediate:expire:".length()));
 
-        System.out.println("Redis 키 만료 이벤트 발생 - 예약ID: " + reservationId);
 
         Reservation r = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ReservationHandler(ErrorStatus._RESERVATION_NOT_FOUND));
-
-        System.out.println("예약 상태: " + r.getReservationStatus() + ", 출석 상태: " + r.getAttendanceStatus() + ", 즉시예약: " + r.getIsImmediate());
 
         // 상태가 확정이면서 사용 전일 때만 처리
         if (r.getReservationStatus() == ReservationStatus.APPROVED
                 && r.getAttendanceStatus() == AttendanceStatus.BEFORE_USE
                 && Boolean.TRUE.equals(r.getIsImmediate())) {
-            
-            System.out.println("예약 만료 처리 시작 - 예약ID: " + reservationId);
+
             
             // 예약 취소 처리
             r.cancelReservation(CancelReason.NO_SHOW);
             reservationRepository.save(r);
-            
-            System.out.println("예약 취소 완료 - 예약ID: " + reservationId);
+
 
             // 메시지 발송
             reservationMessageService.sendReservationExpired(reservationId);
