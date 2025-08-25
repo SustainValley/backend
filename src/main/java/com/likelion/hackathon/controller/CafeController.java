@@ -1,10 +1,12 @@
 package com.likelion.hackathon.controller;
 
+import com.likelion.hackathon.apiPayload.ApiResponse;
 import com.likelion.hackathon.dto.CafeDto.*;
 import com.likelion.hackathon.dto.MessageResponseDto;
 import com.likelion.hackathon.entity.Cafe;
 import com.likelion.hackathon.entity.CafeImage;
 import com.likelion.hackathon.entity.CafeOperatingHours;
+import com.likelion.hackathon.entity.CafeUnavailableBlock;
 import com.likelion.hackathon.entity.enums.SpaceType;
 import com.likelion.hackathon.repository.CafeRepository;
 import com.likelion.hackathon.service.CafeOperatingService;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -126,7 +129,7 @@ public class CafeController {
         return ResponseEntity.ok(new MessageResponseDto("카페 이미지가 삭제되었습니다."));
     }
 
-
+    // 카페 운영 정보 전체 반환
     @Operation(summary = "특정 카페의 운영시간 반환", description = "특정 카페의 운영시간을 반환합니다")
     @GetMapping("/{cafeId}/operating")
     public ResponseEntity<CafeOperatingDto> getOperatingHours(@PathVariable Long cafeId) {
@@ -158,15 +161,31 @@ public class CafeController {
                 "카페 [" + cafeId + "] 운영 상태가 " + type.toUpperCase() + " 으로 변경되었습니다."
         ));
     }
-        // 카페 예약 가능 시간 설정/수정/막기
-    @PatchMapping("/{cafe_id}/abletime/update")
-    @Operation(summary = "카페 예약 가능 시간/상태 수정", description = "예약 가능 시작/종료 시간 및 상태를 수정합니다.")
-    public ResponseEntity<MessageResponseDto> updateAbleTime(
-            @PathVariable("cafe_id") Long cafeId,
-            @RequestBody CafeAbleTimeRequestDto dto) {
 
-        cafeOperatingService.updateAbleTime(cafeId, dto);
-        return ResponseEntity.ok(new MessageResponseDto("예약 가능 정보가 성공적으로 업데이트되었습니다."));
+    // 카페 운영시간 막기
+    @Operation(summary = "카페 예약 막기", description = "특정 요일과 시간의 운영시간을 막을 수 있습니다")
+    @PostMapping("/{cafeId}/unabletime")
+    public ApiResponse<String> addUnavailableTime(
+            @PathVariable Long cafeId,
+            @RequestBody UnableTimeRequestDto dto) {
+
+        cafeOperatingService.addUnavailableTime(cafeId, dto);
+        return ApiResponse.onSuccess("정상 등록 되었습니다");
+    }
+
+    // 카페 운영정보 전부 반환
+    @Operation(summary = "카페의 운영시간(운영/미운영 시간 전부 반환)", description = "특정 카페의 운영시간에 대한 정보를 반환합니다")
+    @GetMapping("/{cafeId}/operateing/list")
+    public ApiResponse<UnableTimeResponseDto> getOperatingList(
+            @PathVariable Long cafeId,
+            @RequestParam String dayOfWeek) {
+
+        com.likelion.hackathon.entity.enums.DayOfWeek enumDay =
+                com.likelion.hackathon.entity.enums.DayOfWeek.valueOf(dayOfWeek.toUpperCase());
+
+        return ApiResponse.onSuccess(
+                cafeOperatingService.getUnavailableBlocks(cafeId, enumDay)
+        );
     }
 
     //카페 예약 가능 시간 반환

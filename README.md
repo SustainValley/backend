@@ -1,5 +1,43 @@
-# 집으로
+## MOCA 
 
+---
+#### 파일구조
+```angular2html
+.
+├── Dockerfile
+├── README.md
+├── build
+├── build.gradle
+├── gradle
+│   └── wrapper
+│       ├── gradle-wrapper.jar
+│       └── gradle-wrapper.properties
+├── gradlew
+├── gradlew.bat
+├── settings.gradle
+├── src
+│   ├── main
+|   |    ├── java/com/likelion/hackathon/
+│   |    |     ├── apiPayload/
+│   |    |     ├── config/
+│   |    |     ├── controller/
+│   |    |     ├── converter/
+│   |    |     ├── dto/
+│   |    |     ├── entity/
+│   |    |     ├── redis/
+│   |    |     ├── repository/
+│   |    |     ├── security/jwt/
+│   |    |     ├── service/
+│   |    |     └── HackathonApplication.java
+│   |    └── resources
+│   |           ├── application-database.yml
+│   |           └── application.yml
+│   └── test/java/com/likelion/hackathon
+└── .gitattributes
+└── .gitignore
+```
+
+#### 코드 컨벤션
 | Commit Type | 설명 |
 |-------------|------|
 | `feat`      | 기능 추가 |

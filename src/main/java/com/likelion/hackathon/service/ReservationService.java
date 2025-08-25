@@ -79,9 +79,7 @@ public class ReservationService {
         // 예약 취소 처리
         reservation.cancelReservation(dto.getCancelReason());
         reservationRepository.save(reservation);
-        
-        System.out.println("deleteReservation: " + reservation.getCancelReason());
-        
+
         // 메시지 서비스를 통한 메시지 발송
         reservationMessageService.sendReservationCanceled(reservationId, reservation.getReservationStatus() ,dto.getCancelReason());
     }
@@ -103,7 +101,6 @@ public class ReservationService {
         reservation.updateAttendanceStatus(AttendanceStatus.valueOf(attendance));
 
         if (reservation.getIsImmediate() && AttendanceStatus.IN_USE.equals(reservation.getAttendanceStatus())) {
-            System.out.println("checkIn 시작");
             checkIn(reservationId);
         }
 
@@ -119,15 +116,12 @@ public class ReservationService {
 
 
         if (reservation.getIsImmediate() && ReservationStatus.APPROVED.equals(dto.getReservationStatus())) {
-            // TTL 10초 키 설정 (테스트용)
-            System.out.println("updateReservationStatus ttl 설정");
+            // TTL 15분 키 설정
             String key = "reservation:immediate:expire:" + reservation.getId();
-            redisTemplate.opsForValue().set(key, "1", Duration.ofSeconds(60));
-            System.out.println("updateReservationStatus ttl 설정 완료: " + key);
+            redisTemplate.opsForValue().set(key, "1", Duration.ofMinutes(15));
 
             reservation.updateReservationApprovedTime();
 
-            System.out.println("updateReservationStatus updateReservationApprovedTime: " + reservation.getReservationApprovedTime());
         }
 
         reservation.updateReservationStatus(dto.getReservationStatus());
@@ -170,11 +164,9 @@ public class ReservationService {
                 .orElseThrow(() -> new ReservationHandler(ErrorStatus._IMMEDIATE_RESERVATION_EXPIRED));
         if (Boolean.TRUE.equals(r.getIsImmediate()) && ReservationStatus.APPROVED.equals(r.getReservationStatus())) {
             // 생성시점 기준 2분 체크
-            if (r.getReservationApprovedTime().isBefore(LocalDateTime.now().minusMinutes(2))) {
+            if (r.getReservationApprovedTime().isBefore(LocalDateTime.now().minusMinutes(15))) {
                 r.cancelReservation(CancelReason.NO_SHOW);
                 reservationRepository.save(r);
-
-                System.out.println("checkIn 노쇼 처리");
                 
                 throw new ReservationHandler(ErrorStatus._IMMEDIATE_RESERVATION_EXPIRED);
             }
@@ -184,7 +176,6 @@ public class ReservationService {
             redisTemplate.delete(key);
         }
 
-        System.out.println("checkIn 종료");
     }
 
 }

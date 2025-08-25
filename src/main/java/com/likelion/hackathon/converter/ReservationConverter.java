@@ -1,6 +1,7 @@
 package com.likelion.hackathon.converter;
 
 
+import com.likelion.hackathon.dto.CafeDto.CafeImageDto;
 import com.likelion.hackathon.dto.ReservationDto.ReservationDto;
 import com.likelion.hackathon.entity.Cafe;
 import com.likelion.hackathon.entity.Reservation;
@@ -25,10 +26,14 @@ public class ReservationConverter {
 
     public static ReservationDto.ReservationResponseDto toResponseDto(Reservation reservation) {
         User user = reservation.getUser();
+        Cafe cafe = reservation.getCafe();
         return ReservationDto.ReservationResponseDto.builder()
                 .reservationsId(reservation.getId())
                 .userId(user.getId())
-                .cafeId(reservation.getCafe().getId())
+                .cafeId(cafe.getId())
+                .cafeName(cafe.getName())
+                .cafeImageUrl(cafe.getImages().isEmpty() ?
+                        null: cafe.getImages().get(0).getImageUrl())
                 .meetingType(reservation.getMeetingType().name())
                 .date(reservation.getDate())
                 .startTime(reservation.getStartTime())

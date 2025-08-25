@@ -1,13 +1,16 @@
 package com.likelion.hackathon.dto.ReservationDto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.likelion.hackathon.dto.CafeDto.CafeImageDto;
 import com.likelion.hackathon.entity.enums.CancelReason;
 import com.likelion.hackathon.entity.enums.ReservationStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 public class ReservationDto {
     @Builder
@@ -40,10 +43,17 @@ public class ReservationDto {
         private String nickname;
         private String phoneNumber;
         private Long cafeId;
+        private String cafeName;
+        private String  cafeImageUrl;
         private String meetingType;
         private LocalDate date;
+
+        @JsonFormat(pattern = "HH:mm:ss", timezone = "Asia/Seoul")
         private LocalTime startTime;
+
+        @JsonFormat(pattern = "HH:mm:ss", timezone = "Asia/Seoul")
         private LocalTime endTime;
+
         private int peopleCount;
         private String ReservationStatus;
         private String attendanceStatus;
