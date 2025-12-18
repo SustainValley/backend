@@ -1,5 +1,5 @@
 # 1. Java 런타임이 포함된 베이스 이미지 사용
-FROM openjdk:17-jdk-slim
+FROM amazoncorretto:17
 
 # 2. JAR 파일 복사
 ARG JAR_FILE=build/libs/*.jar
