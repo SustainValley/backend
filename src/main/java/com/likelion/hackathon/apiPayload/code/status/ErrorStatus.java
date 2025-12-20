@@ -36,7 +36,10 @@ public enum ErrorStatus implements BaseErrorCode {
     _AWS_S3_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AWS-S3-500", "이미지 업로드를 실패했습니다."),
 
     // 메세지 전송 오류
-    _WEBSOCKET_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "WEBSOCKET500", "메세지 전송에 실패했습니다.")
+    _WEBSOCKET_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "WEBSOCKET500", "메세지 전송에 실패했습니다."),
+
+    // 인스타그램 스토리 업로드 오류
+    _INSTA_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INSTA-STORY-500", "스토리 업로드에 실패했습니다")
 
     ;
 
