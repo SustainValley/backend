@@ -22,6 +22,8 @@ env:
   AWS_IAM_ACCESS_KEY: ${{ secrets.AWS_IAM_ACCESS_KEY }}
   AWS_IAM_SECRET_KEY: ${{ secrets.AWS_IAM_SECRET_KEY }}
   AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
+  META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+  META_USER_ID: ${{ secrets.META_USER_ID }}
 
 
 
