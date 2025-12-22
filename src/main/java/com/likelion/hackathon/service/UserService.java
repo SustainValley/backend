@@ -64,7 +64,6 @@ public class UserService {
             cafe.setBusinessInfo(businessInfo);
             cafe.setName(request.getBusinessname());
             cafe.setLocation(request.getAddress());
-            cafe.setMaxSeats(request.getMaxSeats());
 
             userRepository.save(user);
             cafeRepository.save(cafe);
