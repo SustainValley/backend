@@ -59,6 +59,7 @@ public class ReservationDto {
         private String attendanceStatus;
         private String cancelReason;
         private boolean isImmediate;
+        private boolean isCancelChecked;
 
     }
 
