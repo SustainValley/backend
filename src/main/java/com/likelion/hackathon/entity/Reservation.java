@@ -62,6 +62,9 @@ public class Reservation {
 
     private LocalDateTime reservationApprovedTime;
 
+    @Column(name = "is_cancel_checked", nullable = false)
+    private Boolean isCancelChecked;
+
 
     // DB 레벨에서 생성시에도 초기화되도록
     @PrePersist
@@ -93,4 +96,6 @@ public class Reservation {
     public void updateReservationApprovedTime(){
         this.reservationApprovedTime = LocalDateTime.now();
     }
+
+    public void updateIsCancelChecked() { this.isCancelChecked = true ;}
 }

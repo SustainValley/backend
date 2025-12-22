@@ -167,7 +167,7 @@ public class ReservationService {
             if (r.getReservationApprovedTime().isBefore(LocalDateTime.now().minusMinutes(15))) {
                 r.cancelReservation(CancelReason.NO_SHOW);
                 reservationRepository.save(r);
-                
+
                 throw new ReservationHandler(ErrorStatus._IMMEDIATE_RESERVATION_EXPIRED);
             }
 
@@ -176,6 +176,20 @@ public class ReservationService {
             redisTemplate.delete(key);
         }
 
+    }
+
+    // 사용자가 예약 취소를 확인했을 시 isCancelChecked를 true로 반환
+    @Transactional
+    public void updateCancelChecked(Long reservationId) {
+        Reservation reservation = getReservation(reservationId);
+
+        // 예약 취소된 주문건이 맞는지 확인
+        if(! reservation.getReservationStatus().equals(ReservationStatus.REJECTED)) {
+            throw new ReservationHandler(ErrorStatus._RESERVATION_NOT_REJECTED);
+        }
+
+
+        reservation.updateIsCancelChecked();
     }
 
 }
