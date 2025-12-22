@@ -43,6 +43,7 @@ public class ReservationConverter {
                 .attendanceStatus(reservation.getAttendanceStatus().name())
                 .nickname(user.getNickname())
                 .phoneNumber(user.getPhoneNumber())
+                .isCancelChecked(reservation.getIsCancelChecked())
                 .cancelReason(reservation.getCancelReason() == null
                         ? null
                         : reservation.getCancelReason().getDescription())
