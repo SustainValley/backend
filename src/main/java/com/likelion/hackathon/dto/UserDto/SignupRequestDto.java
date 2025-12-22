@@ -17,5 +17,4 @@ public class SignupRequestDto {
     private String businessname;
     private String zipcode;
     private String address;
-    private Long maxSeats;
 }
