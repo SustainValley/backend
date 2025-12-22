@@ -63,7 +63,7 @@ public class Reservation {
     private LocalDateTime reservationApprovedTime;
 
     @Column(name = "is_cancel_checked", nullable = false)
-    private Boolean isCancelChecked;
+    private Boolean isCancelChecked = false;
 
 
     // DB 레벨에서 생성시에도 초기화되도록
@@ -77,6 +77,10 @@ public class Reservation {
         }
         if (this.isImmediate == null) {
             this.isImmediate = false;
+        }
+
+        if (this.isCancelChecked == null) {
+            this.isCancelChecked = false;
         }
     }
 
