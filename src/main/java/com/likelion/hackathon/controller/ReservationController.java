@@ -83,4 +83,11 @@ public class ReservationController{
         return ApiResponse.onSuccess(reservationResponseDto);
     }
 
+    @Operation(summary = "사용자가 예약 취소 확인", description = "예약 취소 건을 사용자가 확인했을 시 false(0) -> true(1)로 값을 변경합니다.")
+    @PatchMapping("/{reservationId}/cancelCheck")
+    public ApiResponse<String> updateCancelCheck(@PathVariable("reservationId") Long reservationId) {
+        reservationService.updateCancelChecked(reservationId);
+        return ApiResponse.onSuccess("success");
+    }
+
 }
