@@ -73,28 +73,29 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd backend
             
-            sudo bash -c 'cat > .env <<EOF
-            DB_URL=${{ secrets.DB_URL }}
-            DB_USERNAME=${{ secrets.DB_USERNAME }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            PROD_DB_URL=${{ secrets.PROD_DB_URL }}
-            PROD_DB_USERNAME=${{ secrets.PROD_DB_USERNAME }}
-            PROD_DB_PASSWORD=${{ secrets.PROD_DB_PASSWORD }}
-            OAUTH_KAKAO_CLIENT_ID=${{ secrets.OAUTH_KAKAO_CLIENT_ID }}
-            OAUTH_KAKAO_REDIRECT_URI=${{ secrets.OAUTH_KAKAO_REDIRECT_URI }}
-            OAUTH_KAKAO_TOKEN_URI=${{ secrets.OAUTH_KAKAO_TOKEN_URI }}
-            OAUTH_KAKAO_USER_INFO_URI=${{ secrets.OAUTH_KAKAO_USER_INFO_URI }}
-            JWT_SECRET=${{ secrets.JWT_SECRET }}
-            SPRING_REDIS_HOST=${{ secrets.SPRING_REDIS_HOST }}
-            SPRING_REDIS_PORT=${{ secrets.SPRING_REDIS_PORT }}
-            AWS_IAM_ACCESS_KEY=${{ secrets.AWS_IAM_ACCESS_KEY }}
-            AWS_IAM_SECRET_KEY=${{ secrets.AWS_IAM_SECRET_KEY }}
-            AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}
-            EOF'
-  
             sudo docker-compose stop
             sudo docker-compose rm -f
-            sudo docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/likelion-app-dev:latest
-            sudo docker-compose up -d
+            
+            sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/likelion-app-dev:latest
+  
+            DB_URL="${{ secrets.DB_URL }}" \
+            DB_USERNAME="${{ secrets.DB_USERNAME }}" \
+            DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            PROD_DB_URL="${{ secrets.PROD_DB_URL }}" \
+            PROD_DB_USERNAME="${{ secrets.PROD_DB_USERNAME }}" \
+            PROD_DB_PASSWORD="${{ secrets.PROD_DB_PASSWORD }}" \
+            OAUTH_KAKAO_CLIENT_ID="${{ secrets.OAUTH_KAKAO_CLIENT_ID }}" \
+            OAUTH_KAKAO_REDIRECT_URI="${{ secrets.OAUTH_KAKAO_REDIRECT_URI }}" \
+            OAUTH_KAKAO_TOKEN_URI="${{ secrets.OAUTH_KAKAO_TOKEN_URI }}" \
+            OAUTH_KAKAO_USER_INFO_URI="${{ secrets.OAUTH_KAKAO_USER_INFO_URI }}" \
+            JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+            SPRING_REDIS_HOST="${{ secrets.SPRING_REDIS_HOST }}" \
+            SPRING_REDIS_PORT="${{ secrets.SPRING_REDIS_PORT }}" \
+            AWS_IAM_ACCESS_KEY="${{ secrets.AWS_IAM_ACCESS_KEY }}" \
+            AWS_IAM_SECRET_KEY="${{ secrets.AWS_IAM_SECRET_KEY }}" \
+            AWS_BUCKET_NAME="${{ secrets.AWS_BUCKET_NAME }}" \
+            DOCKER_HUB_USERNAME="${{ secrets.DOCKER_HUB_USERNAME }}" \
+            META_ACCESS_TOKEN="${{ secrets.META_ACCESS_TOKEN }}" \
+            META_USER_ID="${{ secrets.META_USER_ID }}" \
+            sudo -E docker-compose up -d
