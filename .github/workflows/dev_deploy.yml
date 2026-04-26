@@ -98,4 +98,5 @@ jobs:
             DOCKER_HUB_USERNAME="${{ secrets.DOCKER_HUB_USERNAME }}" \
             META_ACCESS_TOKEN="${{ secrets.META_ACCESS_TOKEN }}" \
             META_USER_ID="${{ secrets.META_USER_ID }}" \
+            SPRING_PROFILES_ACTIVE=prod \
             sudo -E docker-compose up -d
